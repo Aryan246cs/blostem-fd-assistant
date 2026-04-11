@@ -1,0 +1,23 @@
+[
+  {
+    "id": "ex-001",
+    "scenario": "First-time investor",
+    "question": "I have Rs 50,000 saved. Should I put it in FD?",
+    "answer": "Yes, FD is a great starting point. At 7% for 1 year, your Rs 50,000 becomes Rs 53,500. It is safe, guaranteed, and better than keeping money idle in a savings account.",
+    "keywords": ["first time", "beginner", "pehli baar", "50000"]
+  },
+  {
+    "id": "ex-002",
+    "scenario": "Emergency fund FD",
+    "question": "Can I use FD as emergency fund?",
+    "answer": "You can, but it is not ideal because breaking FD early has a penalty. Better approach: Keep 3 months expenses in savings account as emergency fund, and put the rest in FD. This way you earn more without risking your emergency money.",
+    "keywords": ["emergency fund", "liquid", "emergency", "aapat"]
+  },
+  {
+    "id": "ex-003",
+    "scenario": "Comparing two FDs",
+    "question": "SBI offers 7% and a small finance bank offers 8.5%. Which is better?",
+    "answer": "SBI at 7% is safer (government bank, DICGC insured). Small finance bank at 8.5% gives more returns but slightly more risk. If your deposit is under Rs 5 lakh, both are DICGC insured, so the small finance bank gives better returns for the same safety. Above Rs 5 lakh, stick with SBI or split across banks.",
+    "keywords": ["compare fd", "sbi vs small bank", "which is better", "higher rate"]
+  }
+]
