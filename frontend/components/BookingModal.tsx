@@ -79,10 +79,10 @@ export default function BookingModal({
   const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="glass-light rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 sticky top-0 bg-white">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 sticky top-0 bg-white/90 backdrop-blur-sm rounded-t-2xl">
           <h2 className="font-bold text-gray-900 text-lg">
             {step === "success" ? "✅ Booking Confirmed" : "📋 Book Fixed Deposit"}
           </h2>
@@ -159,7 +159,7 @@ export default function BookingModal({
                 }
                 setStep("confirm");
               }}
-              className="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2.5 rounded-xl hover:opacity-90 transition-all shadow-lg"
             >
               Review & Confirm →
             </button>
@@ -194,7 +194,7 @@ export default function BookingModal({
               <button
                 onClick={confirmBooking}
                 disabled={loading}
-                className="flex-1 bg-green-600 text-white font-semibold py-2.5 rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all shadow-lg"
               >
                 {loading ? "Booking..." : "Confirm Booking ✓"}
               </button>
@@ -237,7 +237,7 @@ export default function BookingModal({
             </div>
             <button
               onClick={onClose}
-              className="w-full bg-green-600 text-white font-semibold py-2.5 rounded-xl hover:bg-green-700 transition-colors"
+              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:opacity-90 transition-all shadow-lg"
             >
               Done
             </button>

@@ -1,0 +1,22 @@
+[
+  { "term": "fd", "definition": "Fixed Deposit — you lock money in a bank for a fixed period and earn guaranteed interest." },
+  { "term": "fixed deposit", "definition": "A savings product where you deposit a lump sum for a fixed tenure at a guaranteed interest rate." },
+  { "term": "tds", "definition": "Tax Deducted at Source — the bank automatically deducts 10% tax on FD interest above ₹40,000/year before paying you." },
+  { "term": "dicgc", "definition": "Deposit Insurance and Credit Guarantee Corporation — a government body that insures your bank deposits up to ₹5 lakh per bank." },
+  { "term": "maturity", "definition": "The date when your FD period ends and the bank returns your principal + interest." },
+  { "term": "principal", "definition": "The original amount you deposit in the FD, before any interest is added." },
+  { "term": "tenure", "definition": "The duration for which you lock your money in an FD — can range from 7 days to 10 years." },
+  { "term": "compound interest", "definition": "Interest calculated on both the principal and previously earned interest. Most Indian bank FDs compound quarterly." },
+  { "term": "simple interest", "definition": "Interest calculated only on the principal amount. Formula: P × R × T / 100." },
+  { "term": "premature withdrawal", "definition": "Breaking your FD before the maturity date. Banks charge a 0.5–1% penalty on the interest rate." },
+  { "term": "form 15g", "definition": "A self-declaration form submitted to the bank to avoid TDS deduction if your total income is below the taxable limit." },
+  { "term": "form 15h", "definition": "Same as Form 15G but for senior citizens (age 60+)." },
+  { "term": "nbfc", "definition": "Non-Banking Financial Company — offers FDs at higher rates than banks but without DICGC insurance protection." },
+  { "term": "cumulative fd", "definition": "An FD where interest is not paid periodically but added to the principal and paid at maturity." },
+  { "term": "non-cumulative fd", "definition": "An FD where interest is paid out monthly, quarterly, or annually instead of at maturity." },
+  { "term": "senior citizen fd", "definition": "Special FD for people aged 60+ with an extra 0.25–0.5% interest rate over regular rates." },
+  { "term": "tax saving fd", "definition": "An FD with a 5-year lock-in that qualifies for tax deduction up to ₹1.5 lakh under Section 80C." },
+  { "term": "80c", "definition": "Section 80C of the Income Tax Act — allows deduction up to ₹1.5 lakh for tax-saving FDs, PPF, ELSS, etc." },
+  { "term": "sweep in fd", "definition": "A facility where excess money in your savings account is automatically transferred to an FD to earn higher interest." },
+  { "term": "flexi fd", "definition": "A flexible FD linked to your savings account — you can withdraw partially without breaking the entire FD." }
+]

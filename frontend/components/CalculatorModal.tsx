@@ -106,47 +106,46 @@ export default function CalculatorModal({
   const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="glass-light rounded-2xl shadow-2xl w-full max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
           <h2 className="font-bold text-gray-900 text-lg">🧮 {L.title}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
         </div>
 
         <div className="p-5 space-y-4">
-          {/* Inputs */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{L.principal}</label>
+            <label className="block text-base font-medium text-gray-700 mb-1">{L.principal}</label>
             <input
               type="number"
               value={principal}
               onChange={(e) => setPrincipal(e.target.value)}
               placeholder={L.placeholder_p}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{L.rate}</label>
+              <label className="block text-base font-medium text-gray-700 mb-1">{L.rate}</label>
               <input
                 type="number"
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
                 placeholder={L.placeholder_r}
                 step="0.1"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{L.tenure}</label>
+              <label className="block text-base font-medium text-gray-700 mb-1">{L.tenure}</label>
               <input
                 type="number"
                 value={tenure}
                 onChange={(e) => setTenure(e.target.value)}
                 placeholder={L.placeholder_t}
                 step="0.5"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
           </div>
@@ -156,31 +155,29 @@ export default function CalculatorModal({
           <button
             onClick={calculate}
             disabled={loading}
-            className="w-full bg-green-600 text-white font-semibold py-2.5 rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all shadow-lg"
           >
             {loading ? "Calculating..." : L.calculate}
           </button>
 
-          {/* Result */}
           {result && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3">
+            <div className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-200 rounded-xl p-4 space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{L.maturity}</span>
-                <span className="text-xl font-bold text-green-700">{fmt(result.maturityAmount)}</span>
+                <span className="text-base text-gray-600">{L.maturity}</span>
+                <span className="text-xl font-bold text-emerald-700">{fmt(result.maturityAmount)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{L.interest}</span>
-                <span className="text-base font-semibold text-green-600">{fmt(result.interestEarned)}</span>
+                <span className="text-base text-gray-600">{L.interest}</span>
+                <span className="text-base font-semibold text-emerald-600">{fmt(result.interestEarned)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{L.yield}</span>
-                <span className="text-sm font-medium text-gray-700">{result.effectiveYield}%</span>
+                <span className="text-base text-gray-600">{L.yield}</span>
+                <span className="text-base font-medium text-gray-700">{result.effectiveYield}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{L.compounding}</span>
-                <span className="text-sm text-gray-700">{result.compoundingFrequency}</span>
+                <span className="text-base text-gray-600">{L.compounding}</span>
+                <span className="text-base text-gray-700">{result.compoundingFrequency}</span>
               </div>
-              {/* Visual bar */}
               <div className="mt-2">
                 <div className="flex text-xs text-gray-500 justify-between mb-1">
                   <span>Principal</span>
@@ -188,10 +185,10 @@ export default function CalculatorModal({
                 </div>
                 <div className="h-3 bg-gray-200 rounded-full overflow-hidden flex">
                   <div
-                    className="bg-blue-400 h-full"
+                    className="bg-blue-400 h-full transition-all duration-700"
                     style={{ width: `${(result.principal / result.maturityAmount) * 100}%` }}
                   />
-                  <div className="bg-green-500 h-full flex-1" />
+                  <div className="bg-emerald-500 h-full flex-1" />
                 </div>
               </div>
             </div>
