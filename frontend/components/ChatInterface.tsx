@@ -28,12 +28,11 @@ const SUGGESTIONS: Record<Language, string[]> = {
   ],
 };
 
-// Highlight ₹ amounts and % values in green
 function highlightNumbers(text: string) {
   const parts = text.split(/(₹[\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?%)/g);
   return parts.map((part, i) =>
     /₹|%/.test(part) ? (
-      <span key={i} className="font-semibold text-emerald-400 bg-emerald-400/10 px-0.5 rounded">
+      <span key={i} className="font-semibold text-[#00C6FF] bg-[#00C6FF]/10 px-0.5 rounded">
         {part}
       </span>
     ) : (
@@ -85,26 +84,8 @@ export default function ChatInterface({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  // Auto-scroll
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
-  // Fire initial query once
-  useEffect(() => {
-    if (initialQuery) {
-      setTimeout(() => sendMessage(initialQuery), 100);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Persist to localStorage whenever messages change
-  useEffect(() => {
-    if (messages.length <= 1) return;
-    const session = buildLocalSession(messages, sessionId);
-    saveCurrentSession(session);
-  }, [messages, sessionId]);
+  // Keep a ref to sendMessage so the initialQuery effect always calls the latest version
+  const sendMessageRef = useRef<(text: string) => void>(() => {});
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || loading) return;
@@ -135,7 +116,6 @@ export default function ChatInterface({
       };
       setMessages((prev) => [...prev, assistantMsg]);
 
-      // Sync backend session id
       if (data.sessionId && data.sessionId !== sessionId) {
         setSessionId(data.sessionId);
         onSessionCreated?.(data.sessionId);
@@ -154,6 +134,31 @@ export default function ChatInterface({
       setLoading(false);
     }
   }, [language, sessionId, loading, onSessionCreated]);
+
+  // Keep ref current so initialQuery effect always calls the latest sendMessage
+  useEffect(() => {
+    sendMessageRef.current = sendMessage;
+  }, [sendMessage]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  // Fire initial query once on mount via ref — avoids stale closure issues
+  const firedInitialQuery = useRef(false);
+  useEffect(() => {
+    if (initialQuery && !firedInitialQuery.current) {
+      firedInitialQuery.current = true;
+      const t = setTimeout(() => sendMessageRef.current(initialQuery), 50);
+      return () => clearTimeout(t);
+    }
+  }, [initialQuery]);
+
+  useEffect(() => {
+    if (messages.length <= 1) return;
+    const session = buildLocalSession(messages, sessionId);
+    saveCurrentSession(session);
+  }, [messages, sessionId]);
 
   function copyMessage(content: string, id: string) {
     navigator.clipboard.writeText(content);
@@ -186,7 +191,7 @@ export default function ChatInterface({
   const showSuggestions = messages.length <= 1;
 
   return (
-    <div className="flex flex-col h-full" style={{ height: "calc(100vh - 57px)" }}>
+    <div className="flex flex-col h-full" style={{ height: "calc(100vh - 61px)" }}>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5 chat-scroll">
         {messages.map((msg) => (
@@ -194,20 +199,20 @@ export default function ChatInterface({
             key={msg.id}
             className={`flex msg-enter ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            {/* Assistant avatar */}
+            {/* Bot avatar */}
             {msg.role === "assistant" && (
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold mr-3 flex-shrink-0 mt-1 shadow-lg">
-                ₹
+              <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mr-3 mt-1 shadow-glow-blue">
+                <img src="/logo.png" alt="bot" className="w-full h-full object-cover scale-[2]" />
               </div>
             )}
 
-            <div className={`max-w-[78%] group ${msg.role === "user" ? "items-end" : "items-start"} flex flex-col gap-1`}>
+            <div className={`max-w-[78%] group flex flex-col gap-1 ${msg.role === "user" ? "items-end" : "items-start"}`}>
               {/* Bubble */}
               <div
-                className={`rounded-2xl px-4 py-3 text-base leading-relaxed shadow-lg ${
+                className={`rounded-2xl px-4 py-3 text-base leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-tr-sm"
-                    : "glass-light text-gray-800 rounded-tl-sm"
+                    ? "bubble-user rounded-tr-sm"
+                    : "bubble-bot rounded-tl-sm"
                 }`}
               >
                 {msg.role === "assistant" ? (
@@ -216,18 +221,18 @@ export default function ChatInterface({
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 )}
 
-                {/* Action buttons under assistant messages */}
+                {/* Action buttons under bot messages */}
                 {msg.role === "assistant" && msg.id !== "welcome" && (
                   <div className="flex gap-2 mt-3 flex-wrap">
                     <button
                       onClick={onOpenCalculator}
-                      className="text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full hover:bg-emerald-100 transition-colors"
+                      className="text-xs px-3 py-1.5 rounded-full border border-[#00C6FF]/30 text-[#00C6FF] hover:bg-[#00C6FF]/10 transition-all"
                     >
                       🧮 Calculate Returns
                     </button>
                     <button
                       onClick={onOpenBooking}
-                      className="text-sm bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                      className="text-xs px-3 py-1.5 rounded-full border border-[#6C63FF]/30 text-[#6C63FF] hover:bg-[#6C63FF]/10 transition-all"
                     >
                       📋 Invest Now
                     </button>
@@ -235,18 +240,18 @@ export default function ChatInterface({
                 )}
               </div>
 
-              {/* Timestamp + copy/regenerate */}
+              {/* Timestamp + actions */}
               <div className={`flex items-center gap-2 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                <span className="text-white/30 text-sm">{formatTime(msg.timestamp)}</span>
+                <span className="text-[#718096] text-xs">{formatTime(msg.timestamp)}</span>
                 {msg.role === "assistant" && msg.id !== "welcome" && (
                   <>
                     <button
                       onClick={() => copyMessage(msg.content, msg.id)}
-                      className="text-white/30 hover:text-white/70 transition-colors"
+                      className="text-[#718096] hover:text-[#00C6FF] transition-colors"
                       title="Copy"
                     >
                       {copiedId === msg.id ? (
-                        <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3.5 h-3.5 text-[#00C6FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       ) : (
@@ -257,11 +262,10 @@ export default function ChatInterface({
                     </button>
                     <button
                       onClick={() => {
-                        // Regenerate: resend the last user message
                         const lastUser = [...messages].reverse().find((m) => m.role === "user");
                         if (lastUser) sendMessage(lastUser.content);
                       }}
-                      className="text-white/30 hover:text-white/70 transition-colors"
+                      className="text-[#718096] hover:text-[#00C6FF] transition-colors"
                       title="Regenerate"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -278,14 +282,14 @@ export default function ChatInterface({
         {/* Typing indicator */}
         {loading && (
           <div className="flex justify-start msg-enter">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold mr-3 flex-shrink-0 shadow-lg">
-              ₹
+            <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mr-3 shadow-glow-blue">
+              <img src="/logo.png" alt="bot" className="w-full h-full object-cover scale-[2]" />
             </div>
-            <div className="glass-light rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg">
+            <div className="bubble-bot rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex gap-1 items-center h-4">
-                <span className="typing-dot w-2 h-2 bg-blue-400 rounded-full block" />
-                <span className="typing-dot w-2 h-2 bg-blue-400 rounded-full block" />
-                <span className="typing-dot w-2 h-2 bg-blue-400 rounded-full block" />
+                <span className="typing-dot w-2 h-2 rounded-full block" style={{ background: "#00C6FF" }} />
+                <span className="typing-dot w-2 h-2 rounded-full block" style={{ background: "#00C6FF" }} />
+                <span className="typing-dot w-2 h-2 rounded-full block" style={{ background: "#00C6FF" }} />
               </div>
             </div>
           </div>
@@ -301,7 +305,7 @@ export default function ChatInterface({
               <button
                 key={s}
                 onClick={() => sendMessage(s)}
-                className="chip-glow glass text-blue-100 text-sm px-4 py-2 rounded-full hover:bg-white/15 transition-all"
+                className="chip-glow glass text-[#A0AEC0] hover:text-white text-sm px-4 py-2 rounded-full border border-white/[0.08] transition-all"
               >
                 {s}
               </button>
@@ -310,9 +314,9 @@ export default function ChatInterface({
         </div>
       )}
 
-      {/* Input area — sticky bottom */}
+      {/* Input */}
       <div className="px-4 pb-4 pt-2">
-        <div className="glass input-glow rounded-2xl px-4 py-3 flex items-end gap-3 transition-all max-w-3xl mx-auto">
+        <div className="glass-card input-glow rounded-2xl px-4 py-3 flex items-end gap-3 transition-all max-w-3xl mx-auto">
           <textarea
             ref={inputRef}
             value={input}
@@ -323,18 +327,18 @@ export default function ChatInterface({
                 ? "FD के बारे में पूछें..."
                 : language === "tamil"
                 ? "FD பற்றி கேளுங்கள்..."
-                : "Ask about FD rates, returns, safety..."
+                : "What FD help do you need today?"
             }
             rows={1}
-            className="flex-1 bg-transparent text-white placeholder-blue-300/50 text-base resize-none focus:outline-none max-h-32"
+            className="flex-1 bg-transparent text-white placeholder-[#718096] text-base resize-none focus:outline-none max-h-32"
             style={{ minHeight: "24px" }}
           />
           <button
             onClick={toggleVoice}
-            className={`p-1.5 rounded-full transition-colors flex-shrink-0 ${
+            className={`p-1.5 rounded-full transition-all flex-shrink-0 ${
               isListening
-                ? "bg-red-500/30 text-red-400 animate-pulse"
-                : "text-white/40 hover:text-white hover:bg-white/10"
+                ? "bg-red-500/20 text-red-400 animate-pulse"
+                : "text-[#718096] hover:text-[#00C6FF] hover:bg-white/[0.06]"
             }`}
             title="Voice input (Chrome)"
           >
@@ -343,14 +347,14 @@ export default function ChatInterface({
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || loading}
-            className="flex-shrink-0 w-8 h-8 bg-blue-500 hover:bg-blue-400 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-colors"
+            className="btn-accent flex-shrink-0 w-9 h-9 flex items-center justify-center"
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>
         </div>
-        <p className="text-white/20 text-xs text-center mt-2">
+        <p className="text-[#718096] text-xs text-center mt-2">
           FD Copilot · Not financial advice · Always verify with your bank
         </p>
       </div>

@@ -7,7 +7,7 @@ import CalculatorModal from "@/components/CalculatorModal";
 import BookingModal from "@/components/BookingModal";
 import Sidebar from "@/components/Sidebar";
 import type { Language, Message } from "@/lib/types";
-import { loadCurrentSession, getAllSessions, buildLocalSession, saveCurrentSession } from "@/lib/storage";
+import { loadCurrentSession, getAllSessions, saveCurrentSession } from "@/lib/storage";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -26,7 +26,20 @@ export default function ChatPage() {
     const queryParam = params.get("q");
 
     if (sessionParam) {
-      // Resume a specific session from localStorage
+      // First try sessionStorage (set by dashboard for instant load)
+      const cached = sessionStorage.getItem("resume_session");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed.id === sessionParam) {
+            sessionStorage.removeItem("resume_session");
+            setSessionId(parsed.id);
+            setInitialMessages(parsed.messages);
+            return;
+          }
+        } catch {}
+      }
+      // Fallback to localStorage
       const all = getAllSessions();
       const found = all.find((s) => s.id === sessionParam);
       if (found) {
@@ -36,7 +49,6 @@ export default function ChatPage() {
       }
     }
 
-    // Try restoring last session if no query param
     if (!queryParam) {
       const last = loadCurrentSession();
       if (last) {
@@ -46,7 +58,6 @@ export default function ChatPage() {
       }
     }
 
-    // New chat with optional prefilled query
     if (queryParam) setInitialQuery(queryParam);
   }, []);
 
@@ -70,7 +81,11 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="app-bg min-h-screen flex">
+    <div className="app-bg min-h-screen flex relative">
+      {/* Decorative orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+
       {/* Sidebar */}
       <Sidebar
         open={sidebarOpen}
@@ -80,22 +95,22 @@ export default function ChatPage() {
         activeSessionId={sessionId}
       />
 
-      {/* Overlay for mobile sidebar */}
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-20 lg:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Main chat area */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Chat header */}
-        <header className="flex items-center justify-between px-4 py-3 glass border-b border-white/10">
+      {/* Main area */}
+      <div className="relative z-10 flex-1 flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="flex items-center justify-between px-5 py-3.5 glass border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-white/60 hover:text-white transition-colors"
+              className="text-[#718096] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/[0.06]"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -103,37 +118,36 @@ export default function ChatPage() {
             </button>
             <button onClick={() => router.push("/")} className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
-                <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2] drop-shadow-lg" />
+                <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
               </div>
               <div className="hidden sm:flex flex-col">
                 <span className="text-white font-bold text-base leading-tight">FD Copilot</span>
-                <span className="text-blue-300/60 text-xs leading-tight">AI FD Advisor</span>
+                <span className="text-[#718096] text-xs leading-tight">AI FD Advisor</span>
               </div>
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Tool buttons */}
             <button
               onClick={() => setShowCalculator(true)}
-              className="glass text-white/80 hover:text-white text-sm px-3 py-2 rounded-full transition-all hover:bg-white/15 hidden sm:flex items-center gap-1"
+              className="glass text-[#A0AEC0] hover:text-white text-sm px-3 py-2 rounded-full transition-all hover:bg-white/[0.08] hidden sm:flex items-center gap-1.5 border border-white/[0.06]"
             >
-              🧮 Calculator
+              🧮 <span>Calculator</span>
             </button>
             <button
               onClick={() => setShowBooking(true)}
-              className="glass text-white/80 hover:text-white text-sm px-3 py-2 rounded-full transition-all hover:bg-white/15 hidden sm:flex items-center gap-1"
+              className="glass text-[#A0AEC0] hover:text-white text-sm px-3 py-2 rounded-full transition-all hover:bg-white/[0.08] hidden sm:flex items-center gap-1.5 border border-white/[0.06]"
             >
-              📋 Invest
+              📋 <span>Invest</span>
             </button>
 
-            {/* Language selector — highlighted */}
-            <div className="flex items-center gap-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/40 rounded-full px-3 py-1.5">
-              <span className="text-blue-300 text-xs hidden sm:block">🌐</span>
+            {/* Language — highlighted */}
+            <div className="lang-badge flex items-center gap-1.5 rounded-full px-3 py-1.5">
+              <span className="text-[#00C6FF] text-xs hidden sm:block">🌐</span>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as Language)}
-                className="bg-transparent text-white text-sm font-medium focus:outline-none cursor-pointer"
+                className="bg-transparent text-white text-sm font-semibold focus:outline-none cursor-pointer"
               >
                 <option value="english" className="text-black bg-gray-900">🇬🇧 EN</option>
                 <option value="hindi" className="text-black bg-gray-900">🇮🇳 HI</option>
@@ -143,7 +157,7 @@ export default function ChatPage() {
           </div>
         </header>
 
-        {/* Chat interface */}
+        {/* Chat */}
         <div className="flex-1 overflow-hidden">
           <ChatInterface
             language={language}
@@ -157,12 +171,8 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {showCalculator && (
-        <CalculatorModal language={language} onClose={() => setShowCalculator(false)} />
-      )}
-      {showBooking && (
-        <BookingModal language={language} onClose={() => setShowBooking(false)} />
-      )}
+      {showCalculator && <CalculatorModal language={language} onClose={() => setShowCalculator(false)} />}
+      {showBooking && <BookingModal language={language} onClose={() => setShowBooking(false)} />}
     </div>
   );
 }

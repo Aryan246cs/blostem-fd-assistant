@@ -24,12 +24,11 @@ const LABELS: Record<Language, Record<string, string>> = {
     principal: "Principal Amount (₹)",
     rate: "Interest Rate (%)",
     tenure: "Tenure (Years)",
-    calculate: "Calculate",
+    calculate: "Calculate Returns",
     maturity: "Maturity Amount",
     interest: "Interest Earned",
     yield: "Effective Yield",
     compounding: "Compounding",
-    close: "Close",
     placeholder_p: "e.g. 100000",
     placeholder_r: "e.g. 7.5",
     placeholder_t: "e.g. 2",
@@ -44,7 +43,6 @@ const LABELS: Record<Language, Record<string, string>> = {
     interest: "अर्जित ब्याज",
     yield: "प्रभावी उपज",
     compounding: "चक्रवृद्धि",
-    close: "बंद करें",
     placeholder_p: "जैसे 100000",
     placeholder_r: "जैसे 7.5",
     placeholder_t: "जैसे 2",
@@ -59,20 +57,16 @@ const LABELS: Record<Language, Record<string, string>> = {
     interest: "வட்டி வருமானம்",
     yield: "பயனுள்ள வருவாய்",
     compounding: "கூட்டு வட்டி",
-    close: "மூடு",
     placeholder_p: "எ.கா. 100000",
     placeholder_r: "எ.கா. 7.5",
     placeholder_t: "எ.கா. 2",
   },
 };
 
-export default function CalculatorModal({
-  language,
-  onClose,
-}: {
-  language: Language;
-  onClose: () => void;
-}) {
+const inputCls = "w-full rounded-xl px-3 py-2.5 text-base text-white placeholder-[#718096] focus:outline-none focus:ring-2 focus:ring-[#00C6FF]/50 transition-all";
+const inputStyle = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" };
+
+export default function CalculatorModal({ language, onClose }: { language: Language; onClose: () => void }) {
   const [principal, setPrincipal] = useState("");
   const [rate, setRate] = useState("");
   const [tenure, setTenure] = useState("");
@@ -84,10 +78,7 @@ export default function CalculatorModal({
 
   async function calculate() {
     setError("");
-    if (!principal || !rate || !tenure) {
-      setError("Please fill all fields");
-      return;
-    }
+    if (!principal || !rate || !tenure) { setError("Please fill all fields"); return; }
     setLoading(true);
     try {
       const { data } = await axios.post(`${API_URL}/calculate-fd`, {
@@ -106,89 +97,65 @@ export default function CalculatorModal({
   const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass-light rounded-2xl shadow-2xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl" style={{ background: "linear-gradient(135deg, #0F1C4D 0%, #1A2A6C 100%)", border: "1px solid rgba(0,198,255,0.15)" }}>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-          <h2 className="font-bold text-gray-900 text-lg">🧮 {L.title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          <h2 className="font-bold text-white text-lg flex items-center gap-2">🧮 {L.title}</h2>
+          <button onClick={onClose} className="text-[#718096] hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.08]">✕</button>
         </div>
 
         <div className="p-5 space-y-4">
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">{L.principal}</label>
-            <input
-              type="number"
-              value={principal}
-              onChange={(e) => setPrincipal(e.target.value)}
-              placeholder={L.placeholder_p}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+            <label className="block text-sm font-medium text-[#A0AEC0] mb-1.5">{L.principal}</label>
+            <input type="number" value={principal} onChange={(e) => setPrincipal(e.target.value)}
+              placeholder={L.placeholder_p} className={inputCls} style={inputStyle} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">{L.rate}</label>
-              <input
-                type="number"
-                value={rate}
-                onChange={(e) => setRate(e.target.value)}
-                placeholder={L.placeholder_r}
-                step="0.1"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              <label className="block text-sm font-medium text-[#A0AEC0] mb-1.5">{L.rate}</label>
+              <input type="number" value={rate} onChange={(e) => setRate(e.target.value)}
+                placeholder={L.placeholder_r} step="0.1" className={inputCls} style={inputStyle} />
             </div>
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">{L.tenure}</label>
-              <input
-                type="number"
-                value={tenure}
-                onChange={(e) => setTenure(e.target.value)}
-                placeholder={L.placeholder_t}
-                step="0.5"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+              <label className="block text-sm font-medium text-[#A0AEC0] mb-1.5">{L.tenure}</label>
+              <input type="number" value={tenure} onChange={(e) => setTenure(e.target.value)}
+                placeholder={L.placeholder_t} step="0.5" className={inputCls} style={inputStyle} />
             </div>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          <button
-            onClick={calculate}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all shadow-lg"
-          >
+          <button onClick={calculate} disabled={loading} className="btn-accent w-full py-2.5 font-semibold text-base">
             {loading ? "Calculating..." : L.calculate}
           </button>
 
           {result && (
-            <div className="bg-gradient-to-br from-emerald-50 to-blue-50 border border-emerald-200 rounded-xl p-4 space-y-3">
+            <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(0,198,255,0.06)", border: "1px solid rgba(0,198,255,0.2)" }}>
               <div className="flex justify-between items-center">
-                <span className="text-base text-gray-600">{L.maturity}</span>
-                <span className="text-xl font-bold text-emerald-700">{fmt(result.maturityAmount)}</span>
+                <span className="text-[#A0AEC0] text-sm">{L.maturity}</span>
+                <span className="text-xl font-bold text-[#00C6FF]">{fmt(result.maturityAmount)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base text-gray-600">{L.interest}</span>
-                <span className="text-base font-semibold text-emerald-600">{fmt(result.interestEarned)}</span>
+                <span className="text-[#A0AEC0] text-sm">{L.interest}</span>
+                <span className="text-base font-semibold text-emerald-400">{fmt(result.interestEarned)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base text-gray-600">{L.yield}</span>
-                <span className="text-base font-medium text-gray-700">{result.effectiveYield}%</span>
+                <span className="text-[#A0AEC0] text-sm">{L.yield}</span>
+                <span className="text-base font-medium text-white">{result.effectiveYield}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base text-gray-600">{L.compounding}</span>
-                <span className="text-base text-gray-700">{result.compoundingFrequency}</span>
+                <span className="text-[#A0AEC0] text-sm">{L.compounding}</span>
+                <span className="text-base text-white">{result.compoundingFrequency}</span>
               </div>
-              <div className="mt-2">
-                <div className="flex text-xs text-gray-500 justify-between mb-1">
-                  <span>Principal</span>
-                  <span>Interest</span>
+              {/* Progress bar */}
+              <div className="mt-1">
+                <div className="flex text-xs text-[#718096] justify-between mb-1">
+                  <span>Principal</span><span>Interest</span>
                 </div>
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden flex">
-                  <div
-                    className="bg-blue-400 h-full transition-all duration-700"
-                    style={{ width: `${(result.principal / result.maturityAmount) * 100}%` }}
-                  />
-                  <div className="bg-emerald-500 h-full flex-1" />
+                <div className="h-2.5 rounded-full overflow-hidden flex" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <div className="h-full transition-all duration-700" style={{ width: `${(result.principal / result.maturityAmount) * 100}%`, background: "linear-gradient(90deg,#0072FF,#00C6FF)" }} />
+                  <div className="h-full flex-1 bg-emerald-500/70" />
                 </div>
               </div>
             </div>
