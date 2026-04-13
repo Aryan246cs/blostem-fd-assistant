@@ -13,6 +13,7 @@ const Groq = require("groq-sdk");
 const { calculateFD, evaluateFD } = require("../utils/calculator");
 const { detectLanguage, translateToEnglish, translateFromEnglish } = require("../utils/translator");
 const { loadKnowledgeBase, retrieveContext } = require("../utils/ragRetriever");
+const { generateEngineResponse, loadData: loadEngineData, detectLanguage: engineDetectLang } = require("../utils/responseEngine");
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Load RAG knowledge base on startup
 loadKnowledgeBase();
+loadEngineData();
 
 // Load jargon buster once at startup
 const JARGON_PATH = path.join(__dirname, "../rag-data/fd-jargon-buster.json");
@@ -77,70 +79,241 @@ function checkJargon(text) {
   return found ? found.definition : null;
 }
 
-// ─── GROQ CLIENT ─────────────────────────────────────────────────────────────
+// ─── LLM CLIENTS ─────────────────────────────────────────────────────────────
+
+// Groq — English queries (LLaMA 3.1 8B, fast)
 const groqClient = process.env.GROQ_API_KEY
-  ? new Groq({ apiKey: process.env.GROQ_API_KEY })
+  ? new Groq({ apiKey: process.env.GROQ_API_KEY.trim() })
   : null;
 
+// HuggingFace — Hinglish/Hindi queries (Mistral 7B, better vernacular)
+const axios = require("../backend/node_modules/axios");
+const HF_API_KEY   = process.env.HF_API_KEY?.trim() || null;
+const HF_MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3";
+
 // ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are a friendly and knowledgeable Fixed Deposit (FD) advisor for Indian users.
+const SYSTEM_PROMPT = `You are an FD (Fixed Deposit) advisor for Indian users — especially people from Tier 2 and Tier 3 cities who are new to investing.
 
-Your job:
-- Help users understand Fixed Deposits in simple, clear language (8th grade level)
-- Always include actual numbers and examples (e.g., "₹1,00,000 at 7% for 1 year = ₹1,07,186")
-- Give a clear recommendation at the end of every response
-- Use real-life comparisons (e.g., "This is better than keeping money in a savings account")
-- Explain financial terms simply (e.g., "TDS means the bank deducts tax before giving you interest")
-- Be warm, encouraging, and non-judgmental
-- Keep responses concise — 3 to 5 sentences max unless a detailed explanation is needed
-- Always mention safety (DICGC insurance up to ₹5 lakh)
-- Never give advice that could cause financial harm
+Your job: explain financial concepts like a trusted local friend, not a bank employee or textbook.
 
-Format your response as plain text. Use ₹ symbol for rupees. Use % for percentages.`;
+---
+
+LANGUAGE RULES:
+- Match the user's language exactly:
+  - Hinglish input → Hinglish output (casual Hindi-English mix)
+  - English input → simple conversational English
+  - Hindi script input → simple spoken Hindi (never formal)
+- If language is unclear, default to Hinglish.
+- Never use formal Hindi: avoid words like "pratham", "aavashyak", "kripya dhyan dein".
+- Always sound conversational:
+  - Say: "Aap kar sakte ho" — NOT: "Aapko karna chahiye"
+  - Say: "Tension mat lo" — NOT: "Chinta karne ki koi baat nahi hai"
+- When using a financial term, explain it immediately in the same sentence:
+  - "TDS matlab bank pehle hi tax kaat leta hai — jaise salary se tax cut hota hai"
+
+---
+
+RESPONSE STRUCTURE (MANDATORY — follow this order every time):
+1. Direct answer — short and clear, no fluff
+2. Analogy — one relatable real-life comparison (keep it Indian and everyday)
+3. Example — must include actual ₹ numbers
+4. Reassurance — reduce fear, build trust
+
+If any part is missing, rewrite before responding.
+
+---
+
+CORE RULES:
+- Keep responses to 4–6 sentences max unless the user asks for detail.
+- Always include ₹ numbers in examples.
+- Simplify every financial term the moment you use it.
+- NEVER use "Recommendation:", "Suggestion:", "Advice:", "Note:", or any labeled section — in any language. This includes Hindi equivalents like "Sudharav:", "Sujhav:", "Salah:", "Tippani:".
+- Blend any advice naturally into the last sentence. Example — BAD: "Recommendation: FD safe hai." GOOD: "Isliye log FD ko safe option mante hain."
+
+---
+
+SAFETY RULES:
+- When safety is asked, always say: "₹5 lakh tak DICGC insurance hota hai — matlab government aapka paisa protect karti hai."
+- Use real bank names when helpful: SBI, HDFC, ICICI, Post Office, Small Finance Banks.
+- Never say: "baaki paisa guaranteed mil jayega"
+- Instead say: "₹5 lakh tak hi insurance guaranteed hota hai"
+
+---
+
+RAG CONTEXT RULES:
+- You will receive pre-matched knowledge from a RAG system at the top of the user message.
+- Use it as your primary source — do not contradict it.
+- Do NOT copy it directly — rewrite it in your own simple, conversational tone.
+- If the RAG answer sounds like a textbook, rewrite it to sound human.
+
+---
+
+SELF-CHECK BEFORE EVERY RESPONSE:
+- Did I follow all 4 structure steps? (Direct answer → Analogy → Example → Reassurance)
+- Did I include an analogy?
+- Did I include a ₹ example?
+- Did I reduce fear if the user seemed worried?
+- Does this sound like a human talking to a friend?
+
+If any answer is no — fix it before sending.
+
+---
+
+FINAL GOAL:
+The user should feel: "Yeh simple hai, mujhe samajh aa gaya."
+NOT: "Yeh ek generic AI answer hai."
+
+When in doubt — simplify more, not less.`;
 
 function getMockResponse(query) {
   const q = query.toLowerCase();
   if (q.includes("what is") || q.includes("explain")) {
-    return "A Fixed Deposit (FD) is like a savings locker at the bank. You put in money (say ₹1,00,000), the bank keeps it for a fixed time (say 1 year), and gives it back with extra money (interest). At 7%, your ₹1,00,000 becomes ₹1,07,186 after 1 year. It is safe, guaranteed, and better than a savings account. Recommendation: FDs are great for safe, predictable returns.";
+    return "A Fixed Deposit is like a savings locker at the bank. You put in money (say ₹1,00,000), the bank keeps it for a fixed time (say 1 year), and gives it back with extra money. At 7%, your ₹1,00,000 becomes ₹1,07,186 after 1 year — safe, guaranteed, and better than a savings account.";
   }
   if (q.includes("rate") || q.includes("interest")) {
-    return "Current FD rates in India (2024): SBI offers 6.5-7.1%, HDFC Bank 7-7.4%, small finance banks up to 9%. Senior citizens get 0.25-0.5% extra. For ₹1,00,000 at 7.5% for 2 years, you earn ₹15,563 as interest. Recommendation: Compare rates across 2-3 banks before booking.";
+    return "Current FD rates in India: SBI offers 6.5–7.1%, HDFC Bank 7–7.4%, small finance banks up to 9%. For ₹1,00,000 at 7.5% for 2 years, you earn ₹15,563 as interest. Compare rates across 2–3 banks before booking.";
   }
   if (q.includes("safe") || q.includes("risk")) {
-    return "Bank FDs are very safe. The government insures your money up to ₹5 lakh per bank through DICGC. Even if the bank closes, you get your money back (up to ₹5 lakh). Recommendation: FDs in scheduled commercial banks are among the safest investments in India.";
+    return "Bank FDs are very safe — the government insures your money up to ₹5 lakh per bank through DICGC. Even if the bank closes, you get your money back up to ₹5 lakh. FDs in scheduled commercial banks are among the safest investments in India.";
   }
   if (q.includes("tax") || q.includes("tds")) {
-    return "FD interest is taxable. If you earn more than ₹40,000 interest in a year, the bank deducts 10% TDS. Submit Form 15G to avoid TDS if your income is below the taxable limit. Recommendation: Always submit Form 15G/15H at the start of the financial year to save tax.";
+    return "FD interest is taxable. If you earn more than ₹40,000 interest in a year, the bank deducts 10% TDS — just like salary tax. Submit Form 15G at the start of the year to avoid TDS if your income is below the taxable limit.";
   }
-  return "Fixed Deposits are a great way to grow your savings safely. For example, ₹50,000 at 7% for 1 year gives you ₹53,500 — that is ₹3,500 extra with zero risk. Recommendation: Start with a 1-year FD to get comfortable, then explore longer tenures for better rates.";
+  return "Fixed Deposits are a great way to grow your savings safely. For example, ₹50,000 at 7% for 1 year gives you ₹53,500 — that is ₹3,500 extra with zero risk. Start with a 1-year FD to get comfortable, then explore longer tenures for better rates.";
 }
 
-async function callLLM(userMessage, context, history = []) {
-  if (!groqClient) return getMockResponse(userMessage);
+// ─── SANITISER ───────────────────────────────────────────────────────────────
+// Strip robotic advisory labels from any LLM output
+// Strip robotic advisory labels from any LLM output — English and Hindi variants
+function sanitiseResponse(text) {
+  return text
+    // Bold labeled sections — remove label + rest of that line
+    .replace(/\*\*(Recommendation|Suggestion|Advice|Note|Summary|Sikayat|Sudharav|Sujhav|Salah|Sujhaav|Tippani)\s*:\*\*[^\n]*/gi, "")
+    // Plain labeled sections — remove label + rest of that line
+    .replace(/(Recommendation|Suggestion|Advice|Note|Sikayat|Sudharav|Sujhav|Salah|Sujhaav|Tippani)\s*:[^\n]*/gi, "")
+    // Clean up leftover blank lines
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
-  // Include last 6 messages as conversation history for context
-  const historyMessages = history.slice(-6).map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
+// ─── LLM CALLERS ─────────────────────────────────────────────────────────────
 
-  const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    ...historyMessages,
-    {
-      role: "user",
-      content: `Context from knowledge base:\n${context}\n\nUser question: ${userMessage}`,
-    },
-  ];
+/**
+ * Build the prompt sent to any LLM.
+ * Keeps it tight — only relevant RAG context, clear language instruction.
+ */
+function buildLLMPrompt(userMessage, context, lang) {
+  const langInstruction =
+    lang === "english"
+      ? "Reply in simple conversational English."
+      : lang === "hindi"
+      ? "Reply in simple spoken Hindi (not formal). Use Devanagari script."
+      : "Reply in Hinglish — casual Hindi-English mix like 'Tension mat lo, aapka paisa safe hai.' Never use formal Hindi.";
 
+  return `${langInstruction}
+
+Use this knowledge to answer:
+${context}
+
+User asked: ${userMessage}
+
+Reply in exactly this order — no labels, no extra sections:
+1. Direct answer (1 sentence)
+2. Analogy — one everyday comparison (start with "Aise samjho:")
+3. Example — must include a ₹ number
+4. Reassurance — end naturally, blend any advice into this sentence
+
+Keep it under 5 sentences total. Sound like a friend, not a bank.`;
+}
+
+/**
+ * Groq — LLaMA 3.1 8B — used for English
+ */
+async function callGroq(userMessage, context, history, lang) {
+  if (!groqClient) return null;
+
+  const historyMessages = history.slice(-6).map((m) => ({ role: m.role, content: m.content }));
   const completion = await groqClient.chat.completions.create({
     model: "llama-3.1-8b-instant",
-    messages,
-    max_tokens: 400,
-    temperature: 0.7,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...historyMessages,
+      { role: "user",   content: buildLLMPrompt(userMessage, context, lang) },
+    ],
+    max_tokens: 350,
+    temperature: 0.55,
   });
+  return completion.choices[0]?.message?.content || null;
+}
 
-  return completion.choices[0]?.message?.content || "I could not generate a response. Please try again.";
+/**
+ * HuggingFace Mistral 7B — used for Hinglish / Hindi
+ * Uses the instruct chat template format
+ */
+async function callMistral(userMessage, context, history, lang) {
+  if (!HF_API_KEY) return null;
+
+  // Build conversation in Mistral instruct format: <s>[INST] ... [/INST]
+  const historyPart = history.slice(-4).map((m) =>
+    m.role === "user"
+      ? `[INST] ${m.content} [/INST]`
+      : m.content
+  ).join("\n");
+
+  const prompt = `<s>${historyPart ? historyPart + "\n" : ""}[INST] ${SYSTEM_PROMPT}\n\n${buildLLMPrompt(userMessage, context, lang)} [/INST]`;
+
+  const response = await axios.post(
+    HF_MODEL_URL,
+    {
+      inputs: prompt,
+      parameters: {
+        max_new_tokens: 350,
+        temperature: 0.55,
+        return_full_text: false,
+        stop: ["</s>", "[INST]"],
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${HF_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 30000,
+    }
+  );
+
+  const output = response.data?.[0]?.generated_text || null;
+  return output;
+}
+
+/**
+ * Router — picks model based on language
+ * Hinglish/Hindi → Mistral (HF) → fallback Groq → fallback engine
+ * English        → Groq (LLaMA) → fallback Mistral → fallback engine
+ */
+async function callLLM(userMessage, context, history = [], lang = "hinglish") {
+  let raw = null;
+
+  try {
+    if (lang === "english") {
+      raw = await callGroq(userMessage, context, history, lang);
+      if (!raw) raw = await callMistral(userMessage, context, history, lang); // fallback
+    } else {
+      // hinglish or hindi → Mistral first
+      raw = await callMistral(userMessage, context, history, lang);
+      if (!raw) raw = await callGroq(userMessage, context, history, lang);   // fallback
+    }
+  } catch (err) {
+    console.warn(`LLM call failed (${lang}):`, err.message);
+  }
+
+  if (!raw) {
+    // Both APIs unavailable — use engine's pre-built response from context
+    const engineLines = context.split("\n").filter((l) => l && !l.startsWith("["));
+    return engineLines.slice(0, 5).join(" ") || getMockResponse(userMessage);
+  }
+
+  return sanitiseResponse(raw);
 }
 
 // ─── ROUTES ───────────────────────────────────────────────────────────────────
@@ -160,32 +333,53 @@ app.post("/chat", async (req, res) => {
     const detectedLang = preferredLanguage || detectLanguage(message);
     const englishMessage = await translateToEnglish(message, detectedLang);
 
-    // ── Jargon shortcut (no LLM needed) ──
-    const jargonHit = checkJargon(englishMessage);
-    let englishResponse;
-    let source = "llm";
+    // Always detect language from the actual message text first.
+    // preferredLanguage (UI dropdown) is only a fallback for truly ambiguous input.
+    const msgLang = engineDetectLang(message); // "hinglish" | "hindi" | "english"
+    const engineLang = msgLang !== "english"
+      ? msgLang  // message has clear Hindi/Hinglish signals — trust it
+      : (preferredLanguage === "hindi" ? "hindi" : "english"); // pure English or ambiguous — use preference
 
-    if (jargonHit) {
-      englishResponse = jargonHit;
+    // ── Run local response engine (RAG + jargon + structured) ──
+    const engineResult = generateEngineResponse(englishMessage, engineLang);
+    // ── Jargon shortcut — if engine found a strong local match, skip LLM ──
+    const jargonHit = checkJargon(englishMessage);
+    let finalResponse;
+    let source = engineResult.source;
+
+    if (jargonHit && !groqClient) {
+      // No LLM available — use engine response directly (already in correct lang)
+      finalResponse = engineResult.response;
       source = "jargon";
     } else {
+      // ── Build enriched context for LLM ──
       const ragContext = retrieveContext(englishMessage);
-      // Get session history for context
+      const engineContext = `
+[Pre-matched RAG answer for this query]
+Intent: ${engineResult.intent} | Emotion: ${engineResult.emotion}
+${engineResult.response}
+
+[Additional knowledge base context]
+${ragContext}`.trim();
+
       const session = sessionId ? getSession(sessionId) : null;
       const history = session ? session.messages : [];
-      englishResponse = await callLLM(englishMessage, ragContext, history);
-    }
 
-    const finalResponse = await translateFromEnglish(englishResponse, detectedLang);
+      // LLM responds in the target language directly — skip MyMemory for Hinglish/English
+      const llmResponse = await callLLM(englishMessage, engineContext, history, engineLang);
+
+      // Only run translation for Hindi script (Devanagari) — MyMemory handles that reasonably
+      finalResponse = (engineLang === "hindi")
+        ? await translateFromEnglish(llmResponse, "hindi")
+        : llmResponse;
+    }
 
     // ── Persist to session ──
     let session = sessionId ? getSession(sessionId) : null;
-    if (!session) {
-      session = createSession(message);
-    }
+    if (!session) session = createSession(message);
     session.messages.push(
-      { role: "user", content: message, timestamp: new Date().toISOString() },
-      { role: "assistant", content: finalResponse, timestamp: new Date().toISOString() }
+      { role: "user",      content: message,       timestamp: new Date().toISOString() },
+      { role: "assistant", content: finalResponse,  timestamp: new Date().toISOString() }
     );
     saveSession(session);
 
@@ -193,7 +387,9 @@ app.post("/chat", async (req, res) => {
       response: finalResponse,
       detectedLanguage: detectedLang,
       sessionId: session.id,
-      source, // "llm" | "jargon"
+      source,
+      intent: engineResult.intent,
+      emotion: engineResult.emotion,
     });
   } catch (err) {
     console.error("Chat error:", err.message);
@@ -303,7 +499,11 @@ app.post("/book-fd", (req, res) => {
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
-    llm: groqClient ? "Groq connected" : "Mock mode (add GROQ_API_KEY to enable)",
+    models: {
+      english:  groqClient  ? "Groq / LLaMA 3.1 8B (active)"   : "unavailable (add GROQ_API_KEY)",
+      hinglish: HF_API_KEY  ? "HuggingFace / Mistral 7B (active)" : "unavailable (add HF_API_KEY)",
+      hindi:    HF_API_KEY  ? "HuggingFace / Mistral 7B (active)" : "unavailable (add HF_API_KEY)",
+    },
     rag: "loaded",
     sessions: chatStore.size,
   });
@@ -312,6 +512,8 @@ app.get("/health", (_req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`\n🚀 FD Copilot Backend running on http://localhost:${PORT}`);
-  console.log(`   LLM: ${groqClient ? "Groq API" : "Mock mode (no API key)"}`);
+  console.log(`   English  → ${groqClient ? "Groq / LLaMA 3.1 8B" : "Mock mode (add GROQ_API_KEY)"}`);
+  console.log(`   Hinglish → ${HF_API_KEY  ? "HuggingFace / Mistral 7B" : "Mock mode (add HF_API_KEY)"}`);
+  console.log(`   Hindi    → ${HF_API_KEY  ? "HuggingFace / Mistral 7B" : "Mock mode (add HF_API_KEY)"}`);
   console.log(`   RAG: Knowledge base loaded\n`);
 });

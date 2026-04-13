@@ -2,91 +2,111 @@
   {
     "id": "fd-001",
     "topic": "What is a Fixed Deposit",
-    "content": "A Fixed Deposit (FD) is a savings product offered by banks and NBFCs where you deposit a lump sum for a fixed period at a guaranteed interest rate.",
-    "simple_explanation": "FD ek safe investment hai jahan aap paise bank me rakhte ho aur badle me fixed interest milta hai.",
-    "example": "Agar aap ₹10,000 FD me rakhte ho 1 saal ke liye 7% pe, to aapko ₹700 milega.",
-    "hinglish": "FD me aap paise lock karte ho aur bank aapko extra paisa deta hai.",
-    "keywords": ["what is fd", "fixed deposit meaning", "fd kya hai"]
+    "simple_en": "A Fixed Deposit is a way to invest money in a bank for a fixed time and earn guaranteed interest",
+    "analogy": "like giving your money to the bank and getting extra in return",
+    "example": "₹10,000 at 7% for 1 year gives around ₹700",
+    "reassurance": "It is one of the safest investment options",
+    "keywords": ["what is fd", "fd meaning"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-002",
     "topic": "How FD Interest Works",
-    "content": "FD interest can be simple or compound. Most Indian banks compound interest quarterly.",
-    "simple_explanation": "Interest matlab bank aapko extra paisa deta hai FD karne par.",
-    "example": "₹1,00,000 FD pe 7% interest pe aapko approx ₹7,000 milta hai 1 saal me.",
-    "hinglish": "Bank aapke paise use karta hai aur badle me aapko interest deta hai.",
-    "keywords": ["fd interest", "compound interest", "simple interest"]
+    "simple_en": "Banks give you extra money called interest for keeping your money with them",
+    "analogy": "like rent you earn for letting someone use your money",
+    "example": "₹1,00,000 at 7% gives around ₹7,000 per year",
+    "reassurance": "Interest is fixed so returns are predictable",
+    "keywords": ["fd interest"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-003",
     "topic": "FD Tenure Options",
-    "content": "FD tenures range from 7 days to 10 years. Longer tenure usually gives higher returns.",
-    "simple_explanation": "Tenure matlab kitne time ke liye aap FD kar rahe ho.",
-    "example": "12M = 12 months = 1 saal. 5Y = 5 saal.",
-    "hinglish": "Tenure matlab paise kitne time ke liye lock rahenge.",
-    "keywords": ["fd tenure", "duration", "months", "years"]
+    "simple_en": "You can choose how long you want to keep money in an FD",
+    "analogy": "like choosing a subscription duration",
+    "example": "7 days to 10 years options available",
+    "reassurance": "Longer duration usually gives better returns",
+    "keywords": ["tenure"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-004",
     "topic": "FD Safety and Risk",
-    "content": "Bank FDs are insured up to Rs 5 lakh per depositor per bank under DICGC.",
-    "simple_explanation": "FD safe hota hai kyunki government ₹5 lakh tak paisa protect karti hai.",
-    "example": "Agar bank fail ho jaye, tab bhi ₹5 lakh tak paisa safe rahega.",
-    "hinglish": "FD me risk bahut kam hota hai.",
-    "keywords": ["fd safe", "risk", "insurance"]
+    "simple_en": "FDs are generally safe and insured up to ₹5 lakh per bank",
+    "analogy": "like having insurance protection on your money",
+    "example": "Even if a bank fails, ₹5 lakh is protected",
+    "reassurance": "That’s why many people trust FDs",
+    "keywords": ["fd safe", "bank safe"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-005",
     "topic": "Tax on FD Interest",
-    "content": "FD interest is taxable as per your income slab. TDS applies above Rs 40,000.",
-    "simple_explanation": "FD pe jo interest milta hai uspe tax lagta hai.",
-    "example": "Agar ₹50,000 interest mila to bank TDS kaat sakta hai.",
-    "hinglish": "FD ka interest tax free nahi hota.",
-    "keywords": ["fd tax", "tds", "tax"]
+    "simple_en": "Interest earned from FD is taxable and bank may deduct tax in advance",
+    "analogy": "like salary tax deduction",
+    "example": "₹50,000 interest may attract TDS",
+    "reassurance": "You can claim refund later",
+    "keywords": ["tds", "tax"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-006",
     "topic": "Premature FD Withdrawal",
-    "content": "You can break FD early but a penalty is charged by banks.",
-    "simple_explanation": "Aap FD time se pehle tod sakte ho, par thoda loss hoga.",
-    "example": "7% FD todne par 6% interest mil sakta hai.",
-    "hinglish": "FD jaldi todoge to kam paisa milega.",
-    "keywords": ["break fd", "withdraw", "penalty"]
+    "simple_en": "You can break FD before time but may get lower interest",
+    "analogy": "like leaving a movie halfway",
+    "example": "7% FD may give 6% if broken early",
+    "reassurance": "Helpful in emergencies",
+    "keywords": ["withdraw"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-007",
     "topic": "Current FD Rates",
-    "content": "FD rates in India range between 6% to 9% depending on bank and tenure.",
-    "simple_explanation": "Different banks alag interest dete hain FD pe.",
-    "example": "Small finance banks 8-9% tak de sakte hain.",
-    "hinglish": "Zyada interest ke liye different banks compare karo.",
-    "keywords": ["fd rates", "interest rate"]
+    "simple_en": "Different banks offer different interest rates on FD",
+    "analogy": "like different shops offering different prices",
+    "example": "Rates usually range from 6% to 9%",
+    "reassurance": "Comparing banks helps you earn more",
+    "keywords": ["rates"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-008",
-    "topic": "FD vs Other Investments",
-    "content": "FD gives guaranteed returns but lower than mutual funds.",
-    "simple_explanation": "FD safe hai, mutual funds risky but zyada return de sakte hain.",
-    "example": "FD: 7%, Mutual fund: 10-15% (risk ke saath).",
-    "hinglish": "FD safe game hai, mutual fund thoda risky game hai.",
-    "keywords": ["fd vs mutual fund", "comparison"]
+    "topic": "FD vs Mutual Funds",
+    "simple_en": "FD gives safe but lower returns, mutual funds give higher but risky returns",
+    "analogy": "FD is safe road, mutual fund is fast highway with risk",
+    "example": "FD ~7%, mutual fund ~10–15%",
+    "reassurance": "Choose based on your risk level",
+    "keywords": ["fd vs mutual fund"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-009",
     "topic": "How to Book an FD",
-    "content": "You can book FD online or offline through bank.",
-    "simple_explanation": "FD banana easy hai, bas amount aur tenure choose karna hota hai.",
-    "example": "Mobile app se 5 minute me FD open ho jata hai.",
-    "hinglish": "Net banking se easily FD kar sakte ho.",
-    "keywords": ["book fd", "how to open fd"]
+    "simple_en": "You can open an FD online or by visiting a bank",
+    "analogy": "like opening a savings account but simpler",
+    "example": "Mobile banking apps allow FD in minutes",
+    "reassurance": "It is quick and easy",
+    "keywords": ["book fd"],
+    "difficulty": "beginner"
   },
   {
     "id": "fd-010",
     "topic": "Senior Citizen FD Benefits",
-    "content": "Senior citizens get higher FD interest rates.",
-    "simple_explanation": "60+ age walon ko extra interest milta hai.",
-    "example": "7% FD pe seniors ko 7.5% mil sakta hai.",
-    "hinglish": "Senior citizens ko FD me extra fayda milta hai.",
-    "keywords": ["senior citizen fd"]
+    "simple_en": "People aged 60+ get higher interest rates on FD",
+    "analogy": "like a bonus benefit for seniors",
+    "example": "7% becomes 7.5%",
+    "reassurance": "Helps seniors earn more safely",
+    "keywords": ["senior"],
+    "difficulty": "beginner"
+  },
+  {
+    "id": "fd-011",
+    "topic": "Cumulative vs Non-Cumulative FD",
+    "simple_en": "Cumulative FD pays at the end, non-cumulative pays regularly",
+    "analogy": "lump sum vs monthly salary",
+    "example": "Choose based on income vs saving goal",
+    "reassurance": "Both are useful depending on need",
+    "keywords": ["cumulative"],
+    "difficulty": "beginner"
   }
 ]

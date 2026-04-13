@@ -1,22 +1,137 @@
 [
-  { "term": "fd", "definition": "Fixed Deposit — you lock money in a bank for a fixed period and earn guaranteed interest." },
-  { "term": "fixed deposit", "definition": "A savings product where you deposit a lump sum for a fixed tenure at a guaranteed interest rate." },
-  { "term": "tds", "definition": "Tax Deducted at Source — the bank automatically deducts 10% tax on FD interest above ₹40,000/year before paying you." },
-  { "term": "dicgc", "definition": "Deposit Insurance and Credit Guarantee Corporation — a government body that insures your bank deposits up to ₹5 lakh per bank." },
-  { "term": "maturity", "definition": "The date when your FD period ends and the bank returns your principal + interest." },
-  { "term": "principal", "definition": "The original amount you deposit in the FD, before any interest is added." },
-  { "term": "tenure", "definition": "The duration for which you lock your money in an FD — can range from 7 days to 10 years." },
-  { "term": "compound interest", "definition": "Interest calculated on both the principal and previously earned interest. Most Indian bank FDs compound quarterly." },
-  { "term": "simple interest", "definition": "Interest calculated only on the principal amount. Formula: P × R × T / 100." },
-  { "term": "premature withdrawal", "definition": "Breaking your FD before the maturity date. Banks charge a 0.5–1% penalty on the interest rate." },
-  { "term": "form 15g", "definition": "A self-declaration form submitted to the bank to avoid TDS deduction if your total income is below the taxable limit." },
-  { "term": "form 15h", "definition": "Same as Form 15G but for senior citizens (age 60+)." },
-  { "term": "nbfc", "definition": "Non-Banking Financial Company — offers FDs at higher rates than banks but without DICGC insurance protection." },
-  { "term": "cumulative fd", "definition": "An FD where interest is not paid periodically but added to the principal and paid at maturity." },
-  { "term": "non-cumulative fd", "definition": "An FD where interest is paid out monthly, quarterly, or annually instead of at maturity." },
-  { "term": "senior citizen fd", "definition": "Special FD for people aged 60+ with an extra 0.25–0.5% interest rate over regular rates." },
-  { "term": "tax saving fd", "definition": "An FD with a 5-year lock-in that qualifies for tax deduction up to ₹1.5 lakh under Section 80C." },
-  { "term": "80c", "definition": "Section 80C of the Income Tax Act — allows deduction up to ₹1.5 lakh for tax-saving FDs, PPF, ELSS, etc." },
-  { "term": "sweep in fd", "definition": "A facility where excess money in your savings account is automatically transferred to an FD to earn higher interest." },
-  { "term": "flexi fd", "definition": "A flexible FD linked to your savings account — you can withdraw partially without breaking the entire FD." }
+  {
+    "term": "fd",
+    "simple_en": "You deposit money in a bank for a fixed time and earn guaranteed interest",
+    "analogy": "like lending money to the bank and getting extra in return",
+    "example": "₹10,000 at 7% for 1 year gives around ₹700 interest",
+    "reassurance": "FD is considered one of the safest investment options",
+    "keywords": ["fd", "fixed deposit"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "tds",
+    "simple_en": "The bank deducts some tax before giving you the interest",
+    "analogy": "like tax being deducted from your salary before you receive it",
+    "example": "If you earn ₹1000 interest, you may receive ₹900 after deduction",
+    "reassurance": "You can claim it back when filing your income tax return",
+    "keywords": ["tds", "tax"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "dicgc",
+    "simple_en": "Your bank deposits are insured up to ₹5 lakh by the government",
+    "analogy": "like an insurance cover for your savings",
+    "example": "Even if a bank fails, up to ₹5 lakh is protected",
+    "reassurance": "This is why bank FDs are generally considered safe",
+    "keywords": ["safety", "insurance"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "maturity",
+    "simple_en": "The time when your FD ends and you receive your money",
+    "analogy": "like getting results after an exam ends",
+    "example": "After 1 year FD, you get principal + interest",
+    "reassurance": "You receive a fixed and predictable amount",
+    "keywords": ["maturity"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "principal",
+    "simple_en": "The original amount you invest in an FD",
+    "analogy": "like the seed you plant",
+    "example": "₹50,000 FD means ₹50,000 is the principal",
+    "reassurance": "Interest is always calculated on this amount",
+    "keywords": ["principal"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "tenure",
+    "simple_en": "The duration for which you keep money in an FD",
+    "analogy": "like the length of a movie",
+    "example": "6 months, 1 year, 5 years",
+    "reassurance": "Longer tenure usually gives better returns",
+    "keywords": ["tenure", "duration"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "compound interest",
+    "simple_en": "Interest is earned on both your money and previous interest",
+    "analogy": "like a snowball growing bigger over time",
+    "example": "₹1 lakh grows faster as interest keeps getting added",
+    "reassurance": "Helps your money grow faster in long term",
+    "keywords": ["compound interest"],
+    "difficulty": "intermediate"
+  },
+  {
+    "term": "premature withdrawal",
+    "simple_en": "Breaking your FD before the end date",
+    "analogy": "like leaving a movie halfway",
+    "example": "7% FD may give only 6% if broken early",
+    "reassurance": "Useful in emergencies but may reduce returns",
+    "keywords": ["break fd", "withdraw", "tod", "todna", "beech mein"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "cumulative fd",
+    "simple_en": "Interest is added to your FD and paid at the end",
+    "analogy": "like saving in a piggy bank",
+    "example": "Interest keeps adding and final amount increases",
+    "reassurance": "Best for long-term savings",
+    "keywords": ["cumulative"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "non-cumulative fd",
+    "simple_en": "Interest is paid to you regularly",
+    "analogy": "like a monthly salary",
+    "example": "You receive interest every month or quarter",
+    "reassurance": "Good if you want regular income",
+    "keywords": ["non cumulative"],
+    "difficulty": "beginner"
+  },
+  {
+    "term": "form 15g",
+    "simple_en": "A declaration to avoid TDS if your income is below taxable limit",
+    "analogy": "like telling the bank you don’t need tax deduction",
+    "example": "Used when total income is low",
+    "reassurance": "Legal way to avoid unnecessary tax deduction",
+    "keywords": ["15g"],
+    "difficulty": "intermediate"
+  },
+  {
+    "term": "form 15h",
+    "simple_en": "Same as Form 15G but for senior citizens",
+    "analogy": "a special version for people aged 60+",
+    "example": "Used by senior citizens to avoid TDS",
+    "reassurance": "Helps seniors keep full interest",
+    "keywords": ["15h"],
+    "difficulty": "intermediate"
+  },
+  {
+    "term": "nbfc",
+    "simple_en": "A financial company that offers FD-like products but is not a bank",
+    "analogy": "like a private finance company",
+    "example": "May offer higher interest than banks",
+    "reassurance": "But does not have ₹5 lakh government insurance",
+    "keywords": ["nbfc"],
+    "difficulty": "intermediate"
+  },
+  {
+    "term": "tax saving fd",
+    "simple_en": "An FD that helps reduce your taxable income",
+    "analogy": "saving money while saving tax",
+    "example": "Up to ₹1.5 lakh deduction under 80C",
+    "reassurance": "Has a 5-year lock-in period",
+    "keywords": ["80c"],
+    "difficulty": "intermediate"
+  },
+  {
+    "term": "auto renewal",
+    "simple_en": "FD automatically starts again after it ends",
+    "analogy": "like auto-renewing subscription",
+    "example": "1-year FD renews for another year",
+    "reassurance": "No need to manually renew",
+    "keywords": ["auto renew"],
+    "difficulty": "beginner"
+  }
 ]

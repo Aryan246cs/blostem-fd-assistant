@@ -1,0 +1,202 @@
+[
+  {
+    "query": "kya bank dub sakta hai?",
+    "intent": "fear",
+    "emotion": "fear",
+    "response_points": [
+      "FD ₹5 lakh tak government insurance me covered hoti hai",
+      "SBI, HDFC, ICICI jaise bade banks ka risk bahut kam hota hai",
+      "poora paisa ek hi bank me rakhne ke bajaye split karna safe hota hai"
+    ]
+  },
+  {
+    "query": "mera paisa safe hai kya FD me?",
+    "intent": "fear",
+    "emotion": "fear",
+    "response_points": [
+      "FD generally safe investment mana jata hai",
+      "₹5 lakh tak DICGC insurance hota hai",
+      "trusted banks jaise SBI, HDFC choose karna better hota hai"
+    ]
+  },
+  {
+    "query": "FD karna safe hai ya nahi?",
+    "intent": "fear",
+    "emotion": "fear",
+    "response_points": [
+      "FD low-risk investment hai",
+      "returns fixed hote hain isliye uncertainty kam hoti hai",
+      "government insurance bhi hota hai up to ₹5 lakh"
+    ]
+  },
+  {
+    "query": "agar bank band ho gaya toh mera paisa?",
+    "intent": "fear",
+    "emotion": "fear",
+    "response_points": [
+      "₹5 lakh tak paisa government insurance se mil jata hai",
+      "isliye bade banks me FD karna safer hota hai",
+      "multiple banks me paisa divide karna ek smart strategy hai"
+    ]
+  },
+  {
+    "query": "kya main FD beech me tod sakta hoon?",
+    "intent": "withdrawal",
+    "emotion": "neutral",
+    "response_points": [
+      "haan, aap FD time se pehle tod sakte ho",
+      "bank thoda penalty charge karta hai",
+      "emergency me yeh option useful hota hai"
+    ]
+  },
+  {
+    "query": "FD todne par kitna loss hota hai?",
+    "intent": "withdrawal",
+    "emotion": "concern",
+    "response_points": [
+      "usually 0.5%–1% interest kam milta hai",
+      "exact penalty bank pe depend karti hai",
+      "short term FD todne par loss zyada noticeable hota hai"
+    ]
+  },
+  {
+    "query": "FD pe tax lagega kya?",
+    "intent": "tax",
+    "emotion": "confusion",
+    "response_points": [
+      "haan FD interest pe tax lagta hai",
+      "bank TDS kaat sakta hai agar limit cross ho jaye",
+      "aap baad me ITR file karke adjust ya refund le sakte ho"
+    ]
+  },
+  {
+    "query": "TDS kyu kaat lete hain bank wale?",
+    "intent": "tax",
+    "emotion": "confusion",
+    "response_points": [
+      "TDS government ka rule hai tax collect karne ke liye",
+      "bank interest dene se pehle tax ka part kaat leta hai",
+      "yeh final tax nahi hota, aap return file kar sakte ho"
+    ]
+  },
+  {
+    "query": "best FD kaha karu?",
+    "intent": "comparison",
+    "emotion": "neutral",
+    "response_points": [
+      "SBI safest options me se ek mana jata hai",
+      "HDFC aur ICICI stability aur service ke liye known hain",
+      "small finance banks higher interest dete hain par thoda risk bhi hota hai"
+    ]
+  },
+  {
+    "query": "SBI ya HDFC me FD better hai?",
+    "intent": "comparison",
+    "emotion": "neutral",
+    "response_points": [
+      "SBI government bank hone ke wajah se extra trust deta hai",
+      "HDFC private bank hai jahan service aur speed better hoti hai",
+      "interest rates dono me similar range me hote hain"
+    ]
+  },
+  {
+    "query": "post office FD safe hai kya?",
+    "intent": "comparison",
+    "emotion": "fear",
+    "response_points": [
+      "post office FD government backed hoti hai",
+      "safety ke liye bahut log prefer karte hain",
+      "interest thoda banks se kam ho sakta hai"
+    ]
+  },
+  {
+    "query": "small finance bank FD safe hai kya?",
+    "intent": "comparison",
+    "emotion": "concern",
+    "response_points": [
+      "small finance banks higher interest dete hain",
+      "₹5 lakh tak insurance yahan bhi apply hota hai",
+      "zyada paisa invest karte time diversify karna better hota hai"
+    ]
+  },
+  {
+    "query": "FD me kitna interest milta hai?",
+    "intent": "beginner",
+    "emotion": "neutral",
+    "response_points": [
+      "generally 6% se 9% ke beech interest milta hai",
+      "small finance banks thoda zyada dete hain",
+      "rate tenure aur bank pe depend karta hai"
+    ]
+  },
+  {
+    "query": "FD karne ke liye kya chahiye?",
+    "intent": "beginner",
+    "emotion": "confusion",
+    "response_points": [
+      "bank account hona chahiye",
+      "amount decide karna hota hai",
+      "tenure choose karna hota hai"
+    ]
+  },
+  {
+    "query": "minimum kitne paise se FD start hoti hai?",
+    "intent": "beginner",
+    "emotion": "confusion",
+    "response_points": [
+      "₹1000 ya ₹5000 se FD start ho sakti hai",
+      "bank ke hisaab se minimum amount change hota hai",
+      "online FD me kabhi kabhi aur flexible options milte hain"
+    ]
+  },
+  {
+    "query": "FD aur savings account me kya difference hai?",
+    "intent": "beginner",
+    "emotion": "confusion",
+    "response_points": [
+      "FD me paisa lock hota hai aur interest zyada milta hai",
+      "savings account me paisa kabhi bhi nikal sakte ho",
+      "FD long-term saving ke liye better hota hai"
+    ]
+  },
+  {
+    "query": "FD ya mutual fund better hai?",
+    "intent": "comparison",
+    "emotion": "confusion",
+    "response_points": [
+      "FD safe hai par return kam hota hai",
+      "mutual fund me risk hota hai par return zyada ho sakta hai",
+      "safe play chahiye to FD better hai"
+    ]
+  },
+  {
+    "query": "FD me paisa double kitne time me hota hai?",
+    "intent": "beginner",
+    "emotion": "curiosity",
+    "response_points": [
+      "interest rate pe depend karta hai",
+      "rule of 72 use kar sakte hain estimate ke liye",
+      "7% pe approx 10 saal me paisa double hota hai"
+    ]
+  },
+  {
+    "query": "FD automatic renew ho jata hai kya?",
+    "intent": "beginner",
+    "emotion": "confusion",
+    "response_points": [
+      "haan agar auto-renewal option on hai to ho jata hai",
+      "warna maturity ke baad paisa savings account me aa jata hai",
+      "renewal setting FD banate waqt choose kar sakte ho"
+    ]
+  },
+  {
+    "query": "FD me risk kya kya hote hain?",
+    "intent": "fear",
+    "emotion": "concern",
+    "response_points": [
+      "interest fixed hota hai to inflation ka risk hota hai",
+      "premature withdrawal pe penalty lagti hai",
+      "bank risk low hota hai par zero nahi"
+    ]
+  }
+]
