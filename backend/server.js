@@ -127,8 +127,15 @@ CORE RULES:
 - Keep responses to 4–6 sentences max unless the user asks for detail.
 - Always include ₹ numbers in examples.
 - Simplify every financial term the moment you use it.
-- NEVER use "Recommendation:", "Suggestion:", "Advice:", "Note:", or any labeled section — in any language. This includes Hindi equivalents like "Sudharav:", "Sujhav:", "Salah:", "Tippani:".
+- NEVER use "Recommendation:", "Suggestion:", "Advice:", "Note:", "Safety note:", or any labeled section — in any language. This includes Hindi equivalents like "Sudharav:", "Sujhav:", "Salah:", "Tippani:".
 - Blend any advice naturally into the last sentence. Example — BAD: "Recommendation: FD safe hai." GOOD: "Isliye log FD ko safe option mante hain."
+
+BAD RESPONSE EXAMPLE (never do this):
+"FD safe hai. ₹5 lakh tak insured hai.
+Recommendation: FD mein invest karo."
+
+GOOD RESPONSE EXAMPLE (always do this):
+"FD safe hai — ₹5 lakh tak DICGC insurance hoti hai, matlab government aapka paisa protect karti hai. Aise samjho jaise ghar mein tijori ho. ₹1,00,000 at 7% for 1 year = ₹1,07,186 milenge. Isliye log FD ko sabse trusted option mante hain."
 
 ---
 
@@ -182,15 +189,78 @@ function getMockResponse(query) {
   return "Fixed Deposits are a great way to grow your savings safely. For example, ₹50,000 at 7% for 1 year gives you ₹53,500 — that is ₹3,500 extra with zero risk. Start with a 1-year FD to get comfortable, then explore longer tenures for better rates.";
 }
 
-// ─── SANITISER ───────────────────────────────────────────────────────────────
+// ─── QUERY NUMBER EXTRACTOR ───────────────────────────────────────────────────
+/**
+ * Detect if a query contains FD calculation params (rate, tenor, principal).
+ * Returns calculated result to inject into LLM context — prevents hallucination.
+ */
+function extractAndCalculate(query) {
+  const q = query.toLowerCase();
+
+  // Rate: "8.5%", "8.5 percent", "8.5% rate"
+  const rateMatch = q.match(/(\d+(?:\.\d+)?)\s*%/);
+
+  // Tenor: "12m", "12 months", "12M", "1 year", "2 years", "6m"
+  const tenorMonthMatch = q.match(/(\d+)\s*(?:m\b|months?)/i);
+  const tenorYearMatch  = q.match(/(\d+(?:\.\d+)?)\s*(?:years?|yr)/i);
+
+  // Principal: "100000", "1 lakh", "1L", "50k", "₹1,00,000"
+  const principalMatch =
+    q.match(/₹\s*([\d,]+)/) ||
+    q.match(/(\d+(?:,\d+)*)\s*(?:rupees?|rs\.?)/i) ||
+    q.match(/(\d+(?:\.\d+)?)\s*(?:lakh|lac)/i) ||
+    q.match(/(\d+(?:\.\d+)?)\s*k\b/i) ||
+    q.match(/\b([\d,]{5,})\b/); // bare number ≥5 digits = likely principal
+
+  if (!rateMatch) return null; // no rate = not a calculation query
+
+  const rate      = parseFloat(rateMatch[1]);
+  const tenureYears = tenorMonthMatch
+    ? parseFloat(tenorMonthMatch[1]) / 12
+    : tenorYearMatch
+    ? parseFloat(tenorYearMatch[1])
+    : 1; // default 1 year
+
+  let principal = 100000; // default ₹1 lakh
+  if (principalMatch) {
+    const raw = principalMatch[1].replace(/,/g, "");
+    if (q.includes("lakh") || q.includes("lac")) {
+      principal = parseFloat(raw) * 100000;
+    } else if (q.includes(" k") || q.match(/\d+k\b/)) {
+      principal = parseFloat(raw) * 1000;
+    } else {
+      principal = parseFloat(raw);
+    }
+  }
+
+  try {
+    const result = calculateFD({ principal, ratePercent: rate, tenureYears });
+    const months = Math.round(tenureYears * 12);
+    return {
+      principal:      result.principal,
+      rate,
+      tenureYears,
+      months,
+      maturityAmount: result.maturityAmount,
+      interestEarned: result.interestEarned,
+      summary: `₹${result.principal.toLocaleString("en-IN")} at ${rate}% for ${months} months (${tenureYears.toFixed(tenureYears % 1 === 0 ? 0 : 1)} year${tenureYears !== 1 ? "s" : ""}) → maturity ₹${result.maturityAmount.toLocaleString("en-IN")}, interest earned ₹${result.interestEarned.toLocaleString("en-IN")} (quarterly compounding)`,
+    };
+  } catch {
+    return null;
+  }
+}
+
+
 // Strip robotic advisory labels from any LLM output
 // Strip robotic advisory labels from any LLM output — English and Hindi variants
 function sanitiseResponse(text) {
   return text
-    // Bold labeled sections — remove label + rest of that line
-    .replace(/\*\*(Recommendation|Suggestion|Advice|Note|Summary|Sikayat|Sudharav|Sujhav|Salah|Sujhaav|Tippani)\s*:\*\*[^\n]*/gi, "")
-    // Plain labeled sections — remove label + rest of that line
-    .replace(/(Recommendation|Suggestion|Advice|Note|Sikayat|Sudharav|Sujhav|Salah|Sujhaav|Tippani)\s*:[^\n]*/gi, "")
+    // Bold labeled sections — remove entire line
+    .replace(/\*\*(Recommendation|Suggestion|Advice|Note|Safety\s*note|Summary|Sikayat|Sudharav|Sujhav|Salah|Sujhaav|Tippani)\s*:\*\*.*/gi, "")
+    // Plain labeled sections — remove entire line (greedy to end of line)
+    .replace(/(Recommendation|Suggestion|Advice|Note|Safety\s*note|Sikayat|Sudharav|Sujhav|Salah|Sujhaav|Tippani)\s*:.*/gi, "")
+    // Remove bullet/dash lists
+    .replace(/^[\-\*•]\s+.*/gm, "")
     // Clean up leftover blank lines
     .replace(/\n{3,}/g, "\n\n")
     .trim();
@@ -205,10 +275,10 @@ function sanitiseResponse(text) {
 function buildLLMPrompt(userMessage, context, lang) {
   const langInstruction =
     lang === "english"
-      ? "Reply in simple conversational English."
+      ? "Reply ONLY in English. Do not use any Hindi or Hinglish words. Pure English only."
       : lang === "hindi"
-      ? "Reply in simple spoken Hindi (not formal). Use Devanagari script."
-      : "Reply in Hinglish — casual Hindi-English mix like 'Tension mat lo, aapka paisa safe hai.' Never use formal Hindi.";
+      ? "Reply ONLY in simple spoken Hindi using Devanagari script. Do not mix English sentences."
+      : "Reply ONLY in Hinglish — casual Hindi-English mix like 'Tension mat lo, aapka paisa safe hai.' Never use formal Hindi. Never write full sentences in pure English.";
 
   return `${langInstruction}
 
@@ -217,13 +287,19 @@ ${context}
 
 User asked: ${userMessage}
 
-Reply in exactly this order — no labels, no extra sections:
+Reply in exactly this order — no labels, no bullet points, no extra sections, plain prose only:
 1. Direct answer (1 sentence)
-2. Analogy — one everyday comparison (start with "Aise samjho:")
-3. Example — must include a ₹ number
+2. Analogy — one everyday comparison (start with "Aise samjho:" or "Think of it like:")
+3. Example — use the VERIFIED CALCULATION numbers from context if present, otherwise use real ₹ numbers
 4. Reassurance — end naturally, blend any advice into this sentence
 
-Keep it under 5 sentences total. Sound like a friend, not a bank.`;
+Rules:
+- If a [VERIFIED CALCULATION] is in the context, use those exact numbers — do not recalculate
+- No bullet points or dashes
+- No "Recommendation:", "Suggestion:", "Advice:", "Sudharav:", "Sujhav:", "Safety note:" or any label — ever
+- If mentioning TDS, explain it simply: "TDS matlab bank pehle hi ₹X tax kaat leta hai — baaki aapko milta hai"
+- Keep it under 5 sentences total
+- Sound like a friend explaining, not a bank or article`;
 }
 
 /**
@@ -354,7 +430,14 @@ app.post("/chat", async (req, res) => {
     } else {
       // ── Build enriched context for LLM ──
       const ragContext = retrieveContext(englishMessage);
-      const engineContext = `
+
+      // If query has numbers, calculate server-side and inject — prevents LLM hallucination
+      const calcResult = extractAndCalculate(message) || extractAndCalculate(englishMessage);
+      const calcContext = calcResult
+        ? `[VERIFIED CALCULATION — use these exact numbers, do not recalculate]\n${calcResult.summary}\n`
+        : "";
+
+      const engineContext = `${calcContext}
 [Pre-matched RAG answer for this query]
 Intent: ${engineResult.intent} | Emotion: ${engineResult.emotion}
 ${engineResult.response}
@@ -362,16 +445,23 @@ ${engineResult.response}
 [Additional knowledge base context]
 ${ragContext}`.trim();
 
+      // Strip Hinglish phrases from context when responding in English
+      const cleanContext = engineLang === "english"
+        ? engineContext.replace(/Aise samjho:/gi, "Think of it like:").replace(/Tension mat lo[^.]*\./gi, "").replace(/Simple baat karta hoon[^—]*—/gi, "")
+        : engineContext;
+
       const session = sessionId ? getSession(sessionId) : null;
       const history = session ? session.messages : [];
 
-      // LLM responds in the target language directly — skip MyMemory for Hinglish/English
-      const llmResponse = await callLLM(englishMessage, engineContext, history, engineLang);
+      const llmResponse = await callLLM(englishMessage, cleanContext, history, engineLang);
 
       // Only run translation for Hindi script (Devanagari) — MyMemory handles that reasonably
-      finalResponse = (engineLang === "hindi")
+      const translated = (engineLang === "hindi")
         ? await translateFromEnglish(llmResponse, "hindi")
         : llmResponse;
+
+      // Final sanitise pass — catches anything translation or LLM reintroduced
+      finalResponse = sanitiseResponse(translated);
     }
 
     // ── Persist to session ──
