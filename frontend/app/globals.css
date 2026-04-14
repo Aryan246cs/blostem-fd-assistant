@@ -164,7 +164,11 @@ body {
   text-shadow: 0 0 20px rgba(0,198,255,0.5);
 }
 
-/* ── Blue sphere ── */
+/* ── SVG icon tint — uniform accent color across all icons ── */
+.icon-tint {
+  filter: brightness(0) saturate(100%) invert(71%) sepia(98%) saturate(400%) hue-rotate(163deg) brightness(101%) contrast(101%);
+  /* Produces #00C6FF — matches the UI accent */
+}
 .blue-sphere {
   width: 90px;
   height: 90px;

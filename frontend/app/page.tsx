@@ -10,19 +10,19 @@ import BookingModal from "@/components/BookingModal";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const QUICK_START = [
-  { label: "Calculate FD returns", icon: "🧮" },
-  { label: "Is FD safe?", icon: "🛡️" },
-  { label: "Best FD rates today", icon: "📈" },
-  { label: "FD vs Mutual Funds", icon: "⚖️" },
-  { label: "How to open an FD?", icon: "🏦" },
-  { label: "What is TDS on FD?", icon: "📋" },
+  { label: "Calculate FD returns", icon: "" },
+  { label: "Is FD safe?", icon: "" },
+  { label: "Best FD rates today", icon: "" },
+  { label: "FD vs Mutual Funds", icon: "" },
+  { label: "How to open an FD?", icon: "" },
+  { label: "What is TDS on FD?", icon: "" },
 ];
 
 const FD_TOOLS: { icon: string; label: string; action: "calculator" | "booking" | "chat"; q?: string }[] = [
-  { icon: "🧮", label: "FD Calculator", action: "calculator" },
-  { icon: "🏦", label: "Compare Banks", action: "chat", q: "Compare bank FD rates" },
-  { icon: "📊", label: "Tax Estimator", action: "chat", q: "Estimate TDS on FD interest" },
-  { icon: "📋", label: "Book an FD", action: "booking" },
+  { icon: "/icons/calculator.svg", label: "FD Calculator", action: "calculator" },
+  { icon: "/icons/bar-chart.svg",  label: "Compare Banks", action: "chat", q: "Compare bank FD rates" },
+  { icon: "/icons/tax.svg",        label: "Tax Estimator", action: "chat", q: "Estimate TDS on FD interest" },
+  { icon: "/icons/writing.svg",    label: "Book an FD", action: "booking" },
 ];
 
 function timeAgo(iso: string) {
@@ -122,6 +122,8 @@ export default function Home() {
 
   useEffect(() => {
     if (messages.length <= 1) return;
+    // Only persist once we have a real backend session id (not a local draft)
+    if (!sessionId) return;
     const session = buildLocalSession(messages, sessionId);
     saveCurrentSession(session);
     setSessions(getAllSessions());
@@ -219,12 +221,12 @@ export default function Home() {
         {/* FD Tools */}
         <div className="px-4 pb-2 flex-shrink-0">
           <p className="text-[#718096] text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#6C63FF] inline-block" /> FD Tools
+            <span className="" /> FD Tools
           </p>
           {FD_TOOLS.map((t) => (
             <button key={t.label} onClick={() => handleToolClick(t)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-white/[0.06] transition-all text-base group">
-              <span>{t.icon}</span>
+              <img src={t.icon} alt="" className="w-4 h-4 icon-tint opacity-70 group-hover:opacity-100 transition-opacity" />
               <span className="group-hover:text-[#00C6FF] transition-colors">{t.label}</span>
             </button>
           ))}
@@ -235,7 +237,7 @@ export default function Home() {
         {/* Recent Chats — this part scrolls */}
         <div className="px-4 flex-1 overflow-y-auto chat-scroll pb-4 min-h-0">
           <p className="text-[#718096] text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00C6FF] inline-block" /> Recent Chats
+            <span className="" /> Recent Chats
           </p>
           {sessions.length === 0 ? (
             <p className="text-[#718096] text-base px-1 mt-2">No chats yet</p>
@@ -264,12 +266,12 @@ export default function Home() {
         {/* Language selector pinned at bottom of sidebar */}
         <div className="px-4 py-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="lang-badge flex items-center gap-2 rounded-xl px-3 py-2">
-            <span className="text-[#00C6FF] text-sm">🌐</span>
+            <img src="/icons/globe.svg" alt="" className="w-4 h-4 icon-tint opacity-80 flex-shrink-0" />
             <select value={language} onChange={(e) => setLanguage(e.target.value as Language)}
               className="bg-transparent text-white text-base font-medium focus:outline-none cursor-pointer flex-1">
-              <option value="english" className="bg-[#0F1C4D]">🇬🇧 English</option>
-              <option value="hindi" className="bg-[#0F1C4D]">🇮🇳 हिंदी</option>
-              <option value="tamil" className="bg-[#0F1C4D]">🇮🇳 தமிழ்</option>
+              <option value="english" className="bg-[#0F1C4D]">English</option>
+              <option value="hindi" className="bg-[#0F1C4D]">हिंदी</option>
+              <option value="tamil" className="bg-[#0F1C4D]">தமிழ்</option>
             </select>
           </div>
         </div>
@@ -314,11 +316,13 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <button onClick={() => setShowCalculator(true)}
               className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
-              🧮 Calculator
+              <img src="/icons/calculator.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
+              Calculator
             </button>
             <button onClick={() => setShowBooking(true)}
               className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
-              📋 Book FD
+              <img src="/icons/writing.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
+              Book FD
             </button>
           </div>
         </div>
@@ -386,10 +390,10 @@ export default function Home() {
         )}
 
         {/* Input + chips — always pinned at bottom of right column */}
-        <div className="flex-shrink-0 px-6 pb-5 pt-3 flex flex-col items-center gap-3">
+        <div className="flex-shrink-0 px-6 pb-3 pt-2 flex flex-col items-center gap-2">
 
-          <form onSubmit={handleSubmit} className="w-full max-w-3xl">
-            <div className="glass-card input-glow rounded-2xl px-5 py-4 flex items-center gap-3 transition-all" style={{ minHeight: "64px" }}>
+          <form onSubmit={handleSubmit} className="w-full max-w-4xl">
+            <div className="glass-card input-glow rounded-full px-5 py-2.5 flex items-center gap-3 transition-all">
               <input
                 ref={inputRef}
                 value={input}
@@ -425,18 +429,18 @@ export default function Home() {
           </form>
 
           {!chatStarted && (
-            <div className="flex flex-wrap justify-center gap-2 max-w-3xl">
+            <div className="flex flex-wrap justify-center gap-2 max-w-4xl mt-3">
               {QUICK_START.map((chip) => (
                 <button key={chip.label} onClick={() => sendRef.current(chip.label)}
                   className="chip-glow text-[#A0AEC0] hover:text-white text-sm px-4 py-2 rounded-full transition-all"
                   style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  {chip.icon} {chip.label}
+                  {chip.label}
                 </button>
               ))}
             </div>
           )}
 
-          <p className="text-[#718096] text-xs">FD Copilot · Not financial advice · Always verify with your bank</p>
+          <p className="text-[#718096] text-[10px] leading-none mt-1">FD Copilot · Not financial advice · Always verify with your bank</p>
         </div>
       </div>
 

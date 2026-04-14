@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="bar-chart" viewBox="0 0 1000 1000">
+  <rect width="88.37" height="162.5" x="226.82" y="619" style="fill:#266178"></rect>
+  <rect width="88.37" height="312.5" x="385.49" y="469" style="fill:#266178"></rect>
+  <rect width="88.37" height="237.5" x="544.16" y="544" style="fill:#266178"></rect>
+  <rect width="88.37" height="412.5" x="702.83" y="369" style="fill:#266178"></rect>
+  <circle cx="271.01" cy="475" r="44" style="fill:#eb4445"></circle>
+  <circle cx="429.68" cy="325" r="44" style="fill:#eb4445"></circle>
+  <circle cx="588.35" cy="400" r="44" style="fill:#eb4445"></circle>
+  <path d="M861.9,836.5H138.1A17.49,17.49,0,0,1,120.6,819V181a17.5,17.5,0,0,1,35,0V801.5H861.9a17.5,17.5,0,1,1,0,35Z" style="fill:#266178"></path>
+  <circle cx="747.02" cy="225" r="44" style="fill:#eb4445"></circle>
+  <path d="m327.27 444.52 68.82-65.07a64.51 64.51 0 0 1-22.68-24l-68.82 65.07A64.43 64.43 0 0 1 327.27 444.52ZM717.72 281.87l-75.63 83.42a64.34 64.34 0 0 0-24.44-22.18l75.63-83.41A64.4 64.4 0 0 0 717.72 281.87ZM492.62 336.5a63.87 63.87 0 0 1-14.13 29.83l46.9 22.16a63.8 63.8 0 0 1 14.14-29.82Z" style="fill:#eb4445"></path>
+</svg>

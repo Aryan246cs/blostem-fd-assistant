@@ -11,12 +11,15 @@ const ALL_SESSIONS_KEY = "fd_copilot_sessions";
 export function saveCurrentSession(session: ChatSession) {
   try {
     localStorage.setItem(CURRENT_SESSION_KEY, JSON.stringify(session));
-    // Also update the sessions list
     const all = getAllSessions();
-    const idx = all.findIndex((s) => s.id === session.id);
-    if (idx >= 0) all[idx] = session;
-    else all.unshift(session);
-    localStorage.setItem(ALL_SESSIONS_KEY, JSON.stringify(all.slice(0, 20))); // keep last 20
+    // Remove any stale local_ entry that this session replaced
+    const filtered = all.filter((s) => {
+      if (s.id === session.id) return false; // will re-add below
+      if (s.id.startsWith("local_") && !session.id.startsWith("local_")) return false; // drop orphaned local draft
+      return true;
+    });
+    filtered.unshift(session);
+    localStorage.setItem(ALL_SESSIONS_KEY, JSON.stringify(filtered.slice(0, 20)));
   } catch {}
 }
 
