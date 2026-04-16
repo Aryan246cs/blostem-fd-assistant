@@ -373,7 +373,7 @@ export default function ChatInterface({
           </button>
         </div>
         <p className="text-[#718096] text-xs text-center mt-2">
-          FD Copilot · Not financial advice · Always verify with your bank
+          FD Saathi · Not financial advice · Always verify with your bank
         </p>
       </div>
     </div>

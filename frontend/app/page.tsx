@@ -18,6 +18,7 @@ const QUICK_START = [
   { label: "FD vs Mutual Funds", icon: "" },
   { label: "How to open an FD?", icon: "" },
   { label: "What is TDS on FD?", icon: "" },
+  { label: "Compare FD vs Mutual Funds", icon: "" },
 ];
 
 const FD_TOOLS: { icon: string; label: string; action: "calculator" | "booking" | "chat" | "navigate" | "tds"; q?: string; href?: string }[] = [
@@ -211,7 +212,7 @@ export default function Home() {
             <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
           </div>
           <div>
-            <p className="text-white font-extrabold text-2xl leading-tight tracking-tight">FD Copilot</p>
+            <p className="text-white font-semibold text-xl leading-tight tracking-tight">FD Saathi</p>
             <p className="text-[#718096] text-sm leading-tight">AI Fixed Deposit Advisor</p>
           </div>
         </div>
@@ -460,7 +461,7 @@ export default function Home() {
             </div>
           )}
 
-          <p className="text-[#718096] text-[10px] leading-none mt-1">FD Copilot · Not financial advice · Always verify with your bank</p>
+          <p className="text-[#718096] text-[10px] leading-none mt-1">FD Saathi · Not financial advice · Always verify with your bank</p>
         </div>
       </div>
 

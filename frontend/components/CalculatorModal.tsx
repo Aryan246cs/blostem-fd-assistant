@@ -101,7 +101,10 @@ export default function CalculatorModal({ language, onClose }: { language: Langu
       <div className="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl" style={{ background: "linear-gradient(135deg, #0F1C4D 0%, #1A2A6C 100%)", border: "1px solid rgba(0,198,255,0.15)" }}>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-          <h2 className="font-bold text-white text-lg flex items-center gap-2">🧮 {L.title}</h2>
+          <h2 className="font-bold text-white text-lg flex items-center gap-2">
+            <img src="/icons/calculator.svg" alt="" className="w-5 h-5 icon-tint" />
+            {L.title}
+          </h2>
           <button onClick={onClose} className="text-[#718096] hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.08]">✕</button>
         </div>
 

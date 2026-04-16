@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FD Copilot — Vernacular Financial Assistant",
+  title: "FD Saathi — Vernacular Financial Assistant",
   description: "Understand Fixed Deposits in your language. Hindi, Tamil, English.",
 };
 

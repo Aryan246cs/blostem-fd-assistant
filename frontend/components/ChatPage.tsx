@@ -122,7 +122,7 @@ export default function ChatPage() {
                 <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
               </div>
               <div className="hidden sm:flex flex-col">
-                <span className="text-white font-bold text-base leading-tight">FD Copilot</span>
+                <span className="text-white font-semibold text-base leading-tight">FD Saathi</span>
                 <span className="text-[#718096] text-xs leading-tight">AI FD Advisor</span>
               </div>
             </button>

@@ -56,7 +56,7 @@ export default function FDPlansPage() {
             <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
           </div>
           <div className="hidden sm:flex flex-col">
-            <span className="text-white font-bold text-base leading-tight">FD Copilot</span>
+            <span className="text-white font-semibold text-base leading-tight">FD Saathi</span>
             <span className="text-[#718096] text-xs leading-tight">AI FD Advisor</span>
           </div>
         </button>
@@ -142,7 +142,7 @@ export default function FDPlansPage() {
         )}
 
         <p className="text-center text-[#718096] text-xs mt-10">
-          FD Copilot · Rates are indicative and subject to change · Always verify with your bank
+          FD Saathi · Rates are indicative and subject to change · Always verify with your bank
         </p>
       </main>
     </div>
