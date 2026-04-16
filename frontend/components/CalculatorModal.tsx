@@ -16,7 +16,7 @@ type CalcResult = {
   summary: string;
 };
 
-type Language = "english" | "hindi" | "tamil";
+type Language = "english" | "hindi" | "tamil" | "marathi" | "bengali";
 
 const LABELS: Record<Language, Record<string, string>> = {
   english: {

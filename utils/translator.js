@@ -17,9 +17,12 @@ const LANGUAGE_CODES = {
   english: "en",
   hindi: "hi",
   tamil: "ta",
+  marathi: "mr",
   en: "en",
   hi: "hi",
   ta: "ta",
+  bengali: "bn",
+  bn: "bn",
 };
 
 /**
@@ -33,6 +36,9 @@ function detectLanguage(text) {
   const hindiPattern = /[\u0900-\u097F]/;
   // Tamil: Unicode range U+0B80–U+0BFF
   const tamilPattern = /[\u0B80-\u0BFF]/;
+  // Bengali: Unicode range U+0980–U+09FF
+  const bengaliPattern = /[\u0980-\u09FF]/;
+  if (bengaliPattern.test(text)) return "bengali";
 
   if (hindiPattern.test(text)) return "hindi";
   if (tamilPattern.test(text)) return "tamil";

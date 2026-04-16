@@ -5,7 +5,7 @@ import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-type Language = "english" | "hindi" | "tamil";
+type Language = "english" | "hindi" | "tamil" | "marathi" | "bengali";
 type Step = "form" | "confirm" | "success";
 
 type BookingDetails = {

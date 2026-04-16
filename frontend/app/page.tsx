@@ -63,6 +63,10 @@ const welcomeMsg = (lang: Language): Message => ({
       ? "नमस्ते! मैं आपका FD सहायक हूं। Fixed Deposit के बारे में कोई भी सवाल पूछें।"
       : lang === "tamil"
       ? "வணக்கம்! நான் உங்கள் FD உதவியாளர். Fixed Deposit பற்றி கேளுங்கள்."
+      : lang === "marathi"
+      ? "नमस्कार! मी तुमचा FD सहाय्यक आहे. Fixed Deposit बद्दल काहीही विचारा."
+      : lang === "bengali"
+      ? "নমস্কার! আমি আপনার FD সহায়ক। Fixed Deposit সম্পর্কে যেকোনো প্রশ্ন করুন।"
       : "Hi! I'm your FD Copilot. Ask me anything about Fixed Deposits — I'll explain in simple language with real numbers.",
   timestamp: new Date().toISOString(),
 });
@@ -175,7 +179,7 @@ export default function Home() {
     }
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SR();
-    recognition.lang = language === "hindi" ? "hi-IN" : language === "tamil" ? "ta-IN" : "en-IN";
+    recognition.lang = language === "hindi" ? "hi-IN" : language === "tamil" ? "ta-IN" : language === "marathi" ? "mr-IN" : language === "bengali" ? "bn-IN" : "en-IN";
     recognition.interimResults = false;
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
@@ -264,14 +268,17 @@ export default function Home() {
         </div>
 
         {/* Language selector pinned at bottom of sidebar */}
-        <div className="px-4 py-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="px-4 py-4 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <p className="text-[#718096] text-xs font-bold uppercase tracking-widest mb-2">Select language to converse</p>
           <div className="lang-badge flex items-center gap-2 rounded-xl px-3 py-2">
             <img src="/icons/globe.svg" alt="" className="w-4 h-4 icon-tint opacity-80 flex-shrink-0" />
             <select value={language} onChange={(e) => setLanguage(e.target.value as Language)}
               className="bg-transparent text-white text-base font-medium focus:outline-none cursor-pointer flex-1">
               <option value="english" className="bg-[#0F1C4D]">English</option>
-              <option value="hindi" className="bg-[#0F1C4D]">हिंदी</option>
-              <option value="tamil" className="bg-[#0F1C4D]">தமிழ்</option>
+              <option value="hindi" className="bg-[#0F1C4D]">हिंदी (hindi)</option>
+              <option value="tamil" className="bg-[#0F1C4D]">தமிழ் (tamil)</option>
+              <option value="marathi" className="bg-[#0F1C4D]">मराठी (marathi)</option>
+              <option value="bengali" className="bg-[#0F1C4D]">বাংলা (bengali)</option>
             </select>
           </div>
         </div>
@@ -385,7 +392,7 @@ export default function Home() {
                 savings today?
               </span>
             </h1>
-            <p className="text-[#718096] text-base mt-3">Ask in English, हिंदी, or தமிழ் — I understand all three.</p>
+            <p className="text-[#718096] text-base mt-3">Ask in English, हिंदी, தமிழ், मराठी, or বাংলা — I understand all five.</p>
           </div>
         )}
 
@@ -402,6 +409,8 @@ export default function Home() {
                 placeholder={
                   language === "hindi" ? "FD के बारे में पूछें..."
                   : language === "tamil" ? "FD பற்றி கேளுங்கள்..."
+                  : language === "marathi" ? "FD बद्दल विचारा..."
+                  : language === "bengali" ? "FD সম্পর্কে জিজ্ঞেস করুন..."
                   : "What FD help do you need today?"
                 }
                 className="flex-1 bg-transparent text-white placeholder-[#718096] text-base focus:outline-none"

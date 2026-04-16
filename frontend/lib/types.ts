@@ -1,4 +1,4 @@
-export type Language = "english" | "hindi" | "tamil";
+export type Language = "english" | "hindi" | "tamil" | "marathi" | "bengali";
 
 export type Message = {
   id: string;

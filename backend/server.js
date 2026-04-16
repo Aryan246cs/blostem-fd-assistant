@@ -278,6 +278,8 @@ function buildLLMPrompt(userMessage, context, lang) {
       ? "Reply ONLY in English. Do not use any Hindi or Hinglish words. Pure English only."
       : lang === "hindi"
       ? "Reply ONLY in simple spoken Hindi using Devanagari script. Do not mix English sentences."
+      : lang === "tamil"
+      ? "Reply ONLY in simple Tamil using Tamil script. Do not mix English or Hindi sentences."
       : "Reply ONLY in Hinglish — casual Hindi-English mix like 'Tension mat lo, aapka paisa safe hai.' Never use formal Hindi. Never write full sentences in pure English.";
 
   return `${langInstruction}
@@ -412,9 +414,17 @@ app.post("/chat", async (req, res) => {
     // Always detect language from the actual message text first.
     // preferredLanguage (UI dropdown) is only a fallback for truly ambiguous input.
     const msgLang = engineDetectLang(message); // "hinglish" | "hindi" | "english"
-    const engineLang = msgLang !== "english"
-      ? msgLang  // message has clear Hindi/Hinglish signals — trust it
-      : (preferredLanguage === "hindi" ? "hindi" : "english"); // pure English or ambiguous — use preference
+    // translator.js detects Tamil (and other scripts) — check it too
+    const translatorLang = detectedLang; // already set above via translator.detectLanguage
+    const engineLang = translatorLang === "tamil"
+      ? "tamil"
+      : translatorLang === "bengali" || preferredLanguage === "bengali"
+      ? "bengali"
+      : translatorLang === "marathi" || preferredLanguage === "marathi"
+      ? "marathi"
+      : msgLang !== "english"
+      ? msgLang
+      : preferredLanguage === "hindi" ? "hindi" : "english";
 
     // ── Run local response engine (RAG + jargon + structured) ──
     const engineResult = generateEngineResponse(englishMessage, engineLang);
@@ -439,25 +449,28 @@ app.post("/chat", async (req, res) => {
 
       const engineContext = `${calcContext}
 [Pre-matched RAG answer for this query]
-Intent: ${engineResult.intent} | Emotion: ${engineResult.emotion}
 ${engineResult.response}
 
 [Additional knowledge base context]
 ${ragContext}`.trim();
 
-      // Strip Hinglish phrases from context when responding in English
-      const cleanContext = engineLang === "english"
+      // Strip Hinglish phrases from context when responding in English, Tamil, or Marathi
+      const cleanContext = (engineLang === "english" || engineLang === "tamil" || engineLang === "marathi" || engineLang === "bengali")
         ? engineContext.replace(/Aise samjho:/gi, "Think of it like:").replace(/Tension mat lo[^.]*\./gi, "").replace(/Simple baat karta hoon[^—]*—/gi, "")
         : engineContext;
 
       const session = sessionId ? getSession(sessionId) : null;
       const history = session ? session.messages : [];
 
-      const llmResponse = await callLLM(englishMessage, cleanContext, history, engineLang);
+      // For Tamil/Hindi/Marathi: LLMs are unreliable at generating these scripts directly.
+      // Generate in English first, then translate via MyMemory.
+      const needsTranslation = engineLang === "hindi" || engineLang === "tamil" || engineLang === "marathi" || engineLang === "bengali";
+      const llmCallLang = needsTranslation ? "english" : engineLang;
 
-      // Only run translation for Hindi script (Devanagari) — MyMemory handles that reasonably
-      const translated = (engineLang === "hindi")
-        ? await translateFromEnglish(llmResponse, "hindi")
+      const llmResponse = await callLLM(englishMessage, cleanContext, history, llmCallLang);
+
+      const translated = needsTranslation
+        ? await translateFromEnglish(llmResponse, engineLang)
         : llmResponse;
 
       // Final sanitise pass — catches anything translation or LLM reintroduced

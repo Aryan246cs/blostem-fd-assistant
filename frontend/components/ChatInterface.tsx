@@ -26,6 +26,16 @@ const SUGGESTIONS: Record<Language, string[]> = {
     "FD பாதுகாப்பானதா?",
     "தற்போதைய FD வட்டி விகிதம் என்ன?",
   ],
+  marathi: [
+    "Fixed Deposit म्हणजे काय?",
+    "FD सुरक्षित आहे का?",
+    "सध्याचे FD व्याज दर किती आहेत?",
+  ],
+  bengali: [
+    "Fixed Deposit কী?",
+    "FD কি নিরাপদ?",
+    "বর্তমান FD সুদের হার কত?",
+  ],
 };
 
 function highlightNumbers(text: string) {
@@ -70,6 +80,10 @@ export default function ChatInterface({
         ? "नमस्ते! मैं आपका FD सहायक हूं। Fixed Deposit के बारे में कोई भी सवाल पूछें।"
         : language === "tamil"
         ? "வணக்கம்! நான் உங்கள் FD உதவியாளர். Fixed Deposit பற்றி கேளுங்கள்."
+        : language === "marathi"
+        ? "नमस्कार! मी तुमचा FD सहाय्यक आहे. Fixed Deposit बद्दल काहीही विचारा."
+        : language === "bengali"
+        ? "নমস্কার! আমি আপনার FD সহায়ক। Fixed Deposit সম্পর্কে যেকোনো প্রশ্ন করুন।"
         : "Hi! I'm your FD Copilot. Ask me anything about Fixed Deposits — I'll explain in simple language with real numbers.",
     timestamp: new Date().toISOString(),
   });
@@ -173,7 +187,7 @@ export default function ChatInterface({
     }
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SR();
-    recognition.lang = language === "hindi" ? "hi-IN" : language === "tamil" ? "ta-IN" : "en-IN";
+    recognition.lang = language === "hindi" ? "hi-IN" : language === "tamil" ? "ta-IN" : language === "marathi" ? "mr-IN" : language === "bengali" ? "bn-IN" : "en-IN";
     recognition.interimResults = false;
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
@@ -327,6 +341,10 @@ export default function ChatInterface({
                 ? "FD के बारे में पूछें..."
                 : language === "tamil"
                 ? "FD பற்றி கேளுங்கள்..."
+                : language === "marathi"
+                ? "FD बद्दल विचारा..."
+                : language === "bengali"
+                ? "FD সম্পর্কে জিজ্ঞেস করুন..."
                 : "What FD help do you need today?"
             }
             rows={1}
