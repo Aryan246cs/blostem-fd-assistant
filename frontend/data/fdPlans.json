@@ -1,0 +1,110 @@
+[
+  {
+    "bank": "State Bank of India",
+    "logo": "/logos/sbi-logo.png",
+    "rate": "6.50% - 7.50%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Safe and flexible FD options with wide tenure range.",
+    "link": "https://sbi.co.in/web/personal-banking/investments-deposits/fixed-deposit"
+  },
+  {
+    "bank": "HDFC Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=hdfcbank.com&sz=128",
+    "rate": "6.60% - 7.75%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular & Senior Citizen FD",
+    "description": "Competitive rates with special benefits.",
+    "link": "https://www.hdfcbank.com/personal/save/deposits/fixed-deposit"
+  },
+  {
+    "bank": "ICICI Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=icicibank.com&sz=128",
+    "rate": "6.70% - 7.80%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Flexible tenure and easy booking.",
+    "link": "https://www.icicibank.com/personal-banking/deposits/fixed-deposit"
+  },
+  {
+    "bank": "Axis Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=axisbank.com&sz=128",
+    "rate": "6.75% - 7.85%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "High returns with flexible payout options.",
+    "link": "https://www.axisbank.com/retail/deposits/fixed-deposits"
+  },
+  {
+    "bank": "Kotak Mahindra Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=kotak.com&sz=128",
+    "rate": "6.50% - 7.90%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Attractive rates with digital access.",
+    "link": "https://www.kotak.com/en/personal-banking/deposits/fixed-deposit.html"
+  },
+  {
+    "bank": "Punjab National Bank",
+    "logo": "/logos/pnb-logo.avif",
+    "rate": "6.50% - 7.25%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Trusted PSU bank with stable returns.",
+    "link": "https://www.pnbindia.in/fixed-deposit.html"
+  },
+  {
+    "bank": "Bank of Baroda",
+    "logo": "https://www.google.com/s2/favicons?domain=bankofbaroda.in&sz=128",
+    "rate": "6.50% - 7.60%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Secure FD plans with flexible tenure.",
+    "link": "https://www.bankofbaroda.in/personal-banking/investments/deposits/fixed-deposit"
+  },
+  {
+    "bank": "Canara Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=canarabank.com&sz=128",
+    "rate": "6.50% - 7.25%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Reliable government-backed bank.",
+    "link": "https://canarabank.com/pages/fixed-deposits"
+  },
+  {
+    "bank": "IndusInd Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=indusind.com&sz=128",
+    "rate": "7.00% - 8.00%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Higher interest rates for better returns.",
+    "link": "https://www.indusind.com/in/en/personal/fixed-deposit.html"
+  },
+  {
+    "bank": "Yes Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=yesbank.in&sz=128",
+    "rate": "7.25% - 8.25%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "High-yield FD options.",
+    "link": "https://www.yesbank.in/personal-banking/yes-individual/fixed-deposit"
+  },
+  {
+    "bank": "IDFC FIRST Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=idfcfirstbank.com&sz=128",
+    "rate": "7.25% - 8.00%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Competitive rates with flexibility.",
+    "link": "https://www.idfcfirstbank.com/personal-banking/deposits/fixed-deposit"
+  },
+  {
+    "bank": "AU Small Finance Bank",
+    "logo": "https://www.google.com/s2/favicons?domain=aubank.in&sz=128",
+    "rate": "7.50% - 8.50%",
+    "tenure": "7 days - 10 years",
+    "type": "Regular FD",
+    "description": "Among highest FD rates in India.",
+    "link": "https://www.aubank.in/personal-banking/deposits/fixed-deposit"
+  }
+]

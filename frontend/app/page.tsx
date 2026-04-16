@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { getAllSessions, deleteSession, clearCurrentSession, buildLocalSession, saveCurrentSession } from "@/lib/storage";
 import type { Language, ChatSession, Message } from "@/lib/types";
@@ -188,6 +189,7 @@ export default function Home() {
   }
 
   const currentModel = MODELS.find((m) => m.id === selectedModel) || MODELS[0];
+  const router = useRouter();
 
   // The whole layout is: fixed sidebar on left, fixed header above sidebar only,
   // and the right main area fills the rest with its own scroll.
@@ -288,7 +290,7 @@ export default function Home() {
       <div className="relative z-10 flex-1 flex flex-col" style={{ height: "100vh", overflow: "hidden" }}>
 
         {/* Sticky top bar — no background, model left, tools right */}
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="flex-shrink-0 flex items-center justify-between px-6 py-3 pr-8 pt-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
           {/* Left: model pill */}
           <div className="relative">
             <button
@@ -320,11 +322,16 @@ export default function Home() {
           </div>
 
           {/* Right: tool pills */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mr-2 mt-1">
             <button onClick={() => setShowCalculator(true)}
               className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
               <img src="/icons/calculator.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
               Calculator
+            </button>
+            <button onClick={() => router.push("/fd-plans")}
+              className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
+              <img src="/icons/explore.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
+              FD Plans
             </button>
             <button onClick={() => setShowBooking(true)}
               className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">

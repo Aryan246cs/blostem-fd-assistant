@@ -16,3 +16,13 @@ export type ChatSession = {
   messageCount?: number;
   preview?: string;
 };
+
+export type FDPlan = {
+  bank: string;
+  logo: string;
+  rate: string;
+  tenure: string;
+  type: string;
+  description: string;
+  link: string;
+};

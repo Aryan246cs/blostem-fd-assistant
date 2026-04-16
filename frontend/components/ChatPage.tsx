@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import ChatInterface from "@/components/ChatInterface";
 import CalculatorModal from "@/components/CalculatorModal";
@@ -134,6 +135,12 @@ export default function ChatPage() {
             >
               🧮 <span>Calculator</span>
             </button>
+            <Link
+              href="/fd-plans"
+              className="glass text-[#A0AEC0] hover:text-white text-sm px-3 py-2 rounded-full transition-all hover:bg-white/[0.08] hidden sm:flex items-center gap-1.5 border border-white/[0.06]"
+            >
+              📊 <span>FD Plans</span>
+            </Link>
             <button
               onClick={() => setShowBooking(true)}
               className="glass text-[#A0AEC0] hover:text-white text-sm px-3 py-2 rounded-full transition-all hover:bg-white/[0.08] hidden sm:flex items-center gap-1.5 border border-white/[0.06]"
