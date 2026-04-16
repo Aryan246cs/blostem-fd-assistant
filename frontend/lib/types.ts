@@ -21,8 +21,11 @@ export type FDPlan = {
   bank: string;
   logo: string;
   rate: string;
+  maxRate: number;
   tenure: string;
+  tenureYears: number;
   type: string;
+  compounding: string;
   description: string;
   link: string;
 };

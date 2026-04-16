@@ -69,6 +69,13 @@ export default function FDPlansPage() {
             <img src="/icons/chat.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
             <span className="hidden sm:inline">Ask Copilot</span>
           </button>
+          <button
+            onClick={() => router.push("/compare-fd")}
+            className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all"
+          >
+            <img src="/icons/compare.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
+            <span className="hidden sm:inline">Compare FD</span>
+          </button>
           <span
             className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
             style={{ color: "#00C6FF", borderColor: "rgba(0,198,255,0.4)" }}

@@ -7,6 +7,7 @@ import { getAllSessions, deleteSession, clearCurrentSession, buildLocalSession, 
 import type { Language, ChatSession, Message } from "@/lib/types";
 import CalculatorModal from "@/components/CalculatorModal";
 import BookingModal from "@/components/BookingModal";
+import TDSCalculatorModal from "@/components/TDSCalculatorModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -19,10 +20,10 @@ const QUICK_START = [
   { label: "What is TDS on FD?", icon: "" },
 ];
 
-const FD_TOOLS: { icon: string; label: string; action: "calculator" | "booking" | "chat"; q?: string }[] = [
+const FD_TOOLS: { icon: string; label: string; action: "calculator" | "booking" | "chat" | "navigate" | "tds"; q?: string; href?: string }[] = [
   { icon: "/icons/calculator.svg", label: "FD Calculator", action: "calculator" },
-  { icon: "/icons/bar-chart.svg",  label: "Compare Banks", action: "chat", q: "Compare bank FD rates" },
-  { icon: "/icons/tax.svg",        label: "Tax Estimator", action: "chat", q: "Estimate TDS on FD interest" },
+  { icon: "/icons/compare.svg",    label: "Compare FD's", action: "navigate", href: "/compare-fd" },
+  { icon: "/icons/tax.svg",        label: "Tax Estimator", action: "tds" },
   { icon: "/icons/writing.svg",    label: "Book an FD", action: "booking" },
 ];
 
@@ -89,6 +90,7 @@ export default function Home() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showCalculator, setShowCalculator] = useState(false);
   const [showBooking, setShowBooking] = useState(false);
+  const [showTDS, setShowTDS] = useState(false);
   const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -159,6 +161,8 @@ export default function Home() {
   function handleToolClick(tool: typeof FD_TOOLS[number]) {
     if (tool.action === "calculator") { setShowCalculator(true); return; }
     if (tool.action === "booking") { setShowBooking(true); return; }
+    if (tool.action === "tds") { setShowTDS(true); return; }
+    if (tool.action === "navigate" && tool.href) { router.push(tool.href); return; }
     if (tool.q) sendRef.current(tool.q);
   }
 
@@ -203,11 +207,11 @@ export default function Home() {
 
         {/* Sidebar header — only over left column */}
         <div className="flex items-center gap-3 px-4 py-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
+          <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
             <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
           </div>
           <div>
-            <p className="text-white font-bold text-lg leading-tight">FD Copilot</p>
+            <p className="text-white font-extrabold text-2xl leading-tight tracking-tight">FD Copilot</p>
             <p className="text-[#718096] text-sm leading-tight">AI Fixed Deposit Advisor</p>
           </div>
         </div>
@@ -333,10 +337,10 @@ export default function Home() {
               <img src="/icons/explore.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
               FD Plans
             </button>
-            <button onClick={() => setShowBooking(true)}
+            <button onClick={() => router.push("/compare-fd")}
               className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
-              <img src="/icons/writing.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
-              Book FD
+              <img src="/icons/compare.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
+              Compare FD
             </button>
           </div>
         </div>
@@ -462,6 +466,7 @@ export default function Home() {
 
       {showCalculator && <CalculatorModal language={language} onClose={() => setShowCalculator(false)} />}
       {showBooking && <BookingModal language={language} onClose={() => setShowBooking(false)} />}
+      {showTDS && <TDSCalculatorModal language={language} onClose={() => setShowTDS(false)} />}
     </div>
   );
 }
