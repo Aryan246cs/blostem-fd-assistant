@@ -8,6 +8,7 @@ import type { Language, ChatSession, Message } from "@/lib/types";
 import CalculatorModal from "@/components/CalculatorModal";
 import BookingModal from "@/components/BookingModal";
 import TDSCalculatorModal from "@/components/TDSCalculatorModal";
+import InvestFlowModal from "@/components/InvestFlowModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -92,6 +93,7 @@ export default function Home() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [showBooking, setShowBooking] = useState(false);
   const [showTDS, setShowTDS] = useState(false);
+  const [showInvest, setShowInvest] = useState(false);
   const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -218,7 +220,7 @@ export default function Home() {
         </div>
 
         {/* New Chat */}
-        <div className="px-4 pt-4 pb-3 flex-shrink-0">
+        <div className="px-4 pt-4 pb-3 flex-shrink-0 space-y-2">
           <button onClick={newChat}
             className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-white text-base font-medium transition-all hover:scale-[1.02]"
             style={{ background: "linear-gradient(90deg, rgba(0,114,255,0.2), rgba(0,198,255,0.15))", border: "1px solid rgba(0,198,255,0.25)" }}>
@@ -226,6 +228,22 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             New Chat
+          </button>
+
+          {/* Invest in FD */}
+          <button
+            onClick={() => setShowInvest(true)}
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-white text-base font-medium transition-all hover:scale-[1.02] group"
+            style={{ background: "linear-gradient(90deg, rgba(108,99,255,0.2), rgba(0,198,255,0.12))", border: "1px solid rgba(108,99,255,0.3)" }}
+          >
+            <svg className="w-4 h-4 icon-tint opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            <div className="text-left">
+              <p className="text-white text-base font-medium leading-tight group-hover:text-[#00C6FF] transition-colors">Invest in FD</p>
+              <p className="text-[#718096] text-xs leading-tight">Booking guide</p>
+            </div>
           </button>
         </div>
 
@@ -468,6 +486,7 @@ export default function Home() {
       {showCalculator && <CalculatorModal language={language} onClose={() => setShowCalculator(false)} />}
       {showBooking && <BookingModal language={language} onClose={() => setShowBooking(false)} />}
       {showTDS && <TDSCalculatorModal language={language} onClose={() => setShowTDS(false)} />}
+      {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
     </div>
   );
 }

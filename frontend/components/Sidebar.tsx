@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getAllSessions, deleteSession } from "@/lib/storage";
 import type { ChatSession } from "@/lib/types";
+import InvestFlowModal from "@/components/InvestFlowModal";
 
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -28,6 +29,7 @@ export default function Sidebar({
   activeSessionId?: string;
 }) {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [showInvest, setShowInvest] = useState(false);
 
   useEffect(() => {
     setSessions(getAllSessions());
@@ -63,7 +65,7 @@ export default function Sidebar({
       </div>
 
       {/* New chat */}
-      <div className="px-3 py-3">
+      <div className="px-3 py-3 space-y-2">
         <button
           onClick={onNewChat}
           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:scale-[1.02]"
@@ -76,6 +78,25 @@ export default function Sidebar({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           New Chat
+        </button>
+
+        {/* Invest in FD */}
+        <button
+          onClick={() => setShowInvest(true)}
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-white text-sm font-medium transition-all hover:scale-[1.02] group"
+          style={{
+            background: "linear-gradient(90deg, rgba(108,99,255,0.2) 0%, rgba(0,198,255,0.12) 100%)",
+            border: "1px solid rgba(108,99,255,0.3)",
+          }}
+        >
+          <svg className="w-4 h-4 icon-tint opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <div className="text-left">
+            <p className="text-white text-sm font-medium leading-tight group-hover:text-[#00C6FF] transition-colors">Invest in FD</p>
+            <p className="text-[#718096] text-xs leading-tight">Booking guide</p>
+          </div>
         </button>
       </div>
 
@@ -116,5 +137,6 @@ export default function Sidebar({
         )}
       </div>
     </aside>
+    {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
   );
 }
