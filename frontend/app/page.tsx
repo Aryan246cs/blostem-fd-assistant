@@ -9,6 +9,7 @@ import CalculatorModal from "@/components/CalculatorModal";
 import BookingModal from "@/components/BookingModal";
 import TDSCalculatorModal from "@/components/TDSCalculatorModal";
 import InvestFlowModal from "@/components/InvestFlowModal";
+import ExplainFDModal from "@/components/ExplainFDModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -94,6 +95,7 @@ export default function Home() {
   const [showBooking, setShowBooking] = useState(false);
   const [showTDS, setShowTDS] = useState(false);
   const [showInvest, setShowInvest] = useState(false);
+  const [showExplain, setShowExplain] = useState(false);
   const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -417,7 +419,7 @@ export default function Home() {
             {/* Blue sphere */}
             <div className="blue-sphere mb-6" />
             <h1 className="text-white text-5xl sm:text-5xl font-bold leading-tight tracking-tight text-center mb-2">
-              How can I help you grow your<br />
+              {getGreeting()}, how can I help<br />you grow your{" "}
               <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(90deg,#0072FF,#00C6FF)" }}>
                 savings today?
               </span>
@@ -469,6 +471,21 @@ export default function Home() {
 
           {!chatStarted && (
             <div className="flex flex-wrap justify-center gap-2 max-w-4xl mt-3">
+              {/* Explain FD chip — highlighted entry point */}
+              <button
+                onClick={() => setShowExplain(true)}
+                className="flex items-center gap-1.5 text-sm px-4 py-2 rounded-full transition-all font-semibold"
+                style={{
+                  background: "linear-gradient(90deg, rgba(0,114,255,0.18), rgba(0,198,255,0.12))",
+                  border: "1px solid rgba(0,198,255,0.35)",
+                  color: "#00C6FF",
+                }}
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                {language === "hindi" ? "यह FD समझाएं" : language === "tamil" ? "FD விளக்கு" : language === "marathi" ? "हे FD समजावा" : language === "bengali" ? "এই FD বুঝিয়ে দাও" : "Explain this FD"}
+              </button>
               {QUICK_START.map((chip) => (
                 <button key={chip.label} onClick={() => sendRef.current(chip.label)}
                   className="chip-glow text-[#A0AEC0] hover:text-white text-sm px-4 py-2 rounded-full transition-all"
@@ -487,6 +504,13 @@ export default function Home() {
       {showBooking && <BookingModal language={language} onClose={() => setShowBooking(false)} />}
       {showTDS && <TDSCalculatorModal language={language} onClose={() => setShowTDS(false)} />}
       {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
+      {showExplain && (
+        <ExplainFDModal
+          language={language}
+          onClose={() => setShowExplain(false)}
+          onExplain={(text) => { setShowExplain(false); sendRef.current(text); }}
+        />
+      )}
     </div>
   );
 }
