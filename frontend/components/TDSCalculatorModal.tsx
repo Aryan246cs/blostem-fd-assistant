@@ -93,6 +93,22 @@ export default function TDSCalculatorModal({ language, onClose }: { language: La
 
         <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto chat-scroll">
 
+          {/* TDS Description */}
+          <div className="rounded-xl p-4 space-y-2.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <p className="text-white text-sm font-semibold">What is TDS on FD?</p>
+            <p className="text-[#A0AEC0] text-xs leading-relaxed">
+              TDS (Tax Deducted at Source) is tax the bank deducts directly from your FD interest before paying you. If your interest from a single bank exceeds <span className="text-[#00C6FF] font-medium">₹40,000/year</span> (₹50,000 for senior citizens), the bank deducts <span className="text-[#00C6FF] font-medium">10% TDS</span> — or 20% if you haven't submitted your PAN.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-0.5">
+              <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "rgba(0,198,255,0.08)", border: "1px solid rgba(0,198,255,0.2)", color: "#00C6FF" }}>
+                Section 194A of Income Tax Act
+              </span>
+              <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "#718096" }}>
+                Submit 15G / 15H to avoid TDS
+              </span>
+            </div>
+          </div>
+
           {/* Inputs */}
           <div>
             <label className="block text-sm font-medium text-[#A0AEC0] mb-1.5">Principal Amount (₹)</label>
