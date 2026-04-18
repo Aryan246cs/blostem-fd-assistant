@@ -32,7 +32,6 @@ interface RankedPlan extends FDPlan {
   rank: number;
 }
 
-const BOOKING_STEPS: Record<string, { step: string; detail: string }[]> = {};
 function getBookingSteps(bank: string, amount: number, tenure: string) {
   return [
     { step: `Open ${bank}'s official website or mobile app`, detail: "Look for the 'Fixed Deposit' or 'Deposits' section on the homepage." },

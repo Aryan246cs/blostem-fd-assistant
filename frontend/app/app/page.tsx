@@ -18,7 +18,6 @@ const QUICK_START = [
   { label: "Is FD safe?", icon: "" },
   { label: "Best FD rates today", icon: "" },
   { label: "FD vs Mutual Funds", icon: "" },
-  { label: "How to open an FD?", icon: "" },
   { label: "What is TDS on FD?", icon: "" },
   { label: "Compare FD vs Mutual Funds", icon: "" },
 ];
@@ -598,6 +597,23 @@ export default function Home() {
                   <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
                 {language === "hindi" ? "यह FD समझाएं" : language === "tamil" ? "FD விளக்கு" : language === "marathi" ? "हे FD समजावा" : language === "bengali" ? "এই FD বুঝিয়ে দাও" : "Explain this FD"}
+              </button>
+              {/* Open FD chip — highlighted entry point */}
+              <button
+                onClick={() => sendRef.current("I need help in opening an FD")}
+                className="flex items-center gap-1.5 text-sm px-4 py-2 rounded-full transition-all font-semibold"
+                style={{
+                  background: "linear-gradient(90deg, rgba(108,99,255,0.18), rgba(0,198,255,0.10))",
+                  border: "1px solid rgba(108,99,255,0.40)",
+                  color: "#a78bfa",
+                }}
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="3" y1="22" x2="21" y2="22" />
+                  <rect x="2" y="11" width="20" height="11" />
+                  <polygon points="12 2 2 11 22 11" />
+                </svg>{" "}
+                {language === "hindi" ? "FD खोलने में मदद" : language === "tamil" ? "FD திறக்க உதவி" : language === "marathi" ? "FD उघडण्यात मदत" : language === "bengali" ? "FD খুলতে সাহায্য" : "Need Help in Opening an FD"}
               </button>
               {QUICK_START.map((chip) => (
                 <button key={chip.label} onClick={() => sendRef.current(chip.label)}
