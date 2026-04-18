@@ -51,7 +51,7 @@ export default function FDPlansPage() {
         className="relative z-20 flex items-center justify-between px-5 py-3.5"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
       >
-        <button onClick={() => router.push("/")} className="flex items-center gap-2.5">
+        <button onClick={() => router.push("/app")} className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
             <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
           </div>
@@ -63,7 +63,7 @@ export default function FDPlansPage() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/app")}
             className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all"
           >
             <img src="/icons/chat.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />

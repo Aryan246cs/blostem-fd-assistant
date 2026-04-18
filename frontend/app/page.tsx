@@ -1,516 +1,242 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { getAllSessions, deleteSession, clearCurrentSession, buildLocalSession, saveCurrentSession } from "@/lib/storage";
-import type { Language, ChatSession, Message } from "@/lib/types";
-import CalculatorModal from "@/components/CalculatorModal";
-import BookingModal from "@/components/BookingModal";
-import TDSCalculatorModal from "@/components/TDSCalculatorModal";
-import InvestFlowModal from "@/components/InvestFlowModal";
-import ExplainFDModal from "@/components/ExplainFDModal";
+import { useEffect, useRef, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
-const QUICK_START = [
-  { label: "Calculate FD returns", icon: "" },
-  { label: "Is FD safe?", icon: "" },
-  { label: "Best FD rates today", icon: "" },
-  { label: "FD vs Mutual Funds", icon: "" },
-  { label: "How to open an FD?", icon: "" },
-  { label: "What is TDS on FD?", icon: "" },
-  { label: "Compare FD vs Mutual Funds", icon: "" },
+const FEATURES = [
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+    ),
+    title: "Ask in Your Language",
+    desc: "Chat in English, हिंदी, தமிழ், मराठी, or বাংলা. FD Saathi understands and responds in the language you're most comfortable with.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
+    title: "FD Calculator",
+    desc: "Instantly compute maturity amounts, interest earned, and effective yields for any FD — with real numbers, not vague estimates.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+      </svg>
+    ),
+    title: "Compare FD Plans",
+    desc: "Side-by-side comparison of FDs across banks and NBFCs. See who offers the best rates for your tenure and amount.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+      </svg>
+    ),
+    title: "TDS & Tax Estimator",
+    desc: "Know exactly how much TDS will be deducted and what your post-tax returns look like before you invest.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    ),
+    title: "FD Jargon Buster",
+    desc: "Confused by terms like cumulative, non-cumulative, or DICGC? Get plain-language explanations instantly.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+      </svg>
+    ),
+    title: "Voice Input",
+    desc: "Speak your question out loud. FD Saathi listens in your language and reads answers back to you.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+    ),
+    title: "FD Booking Guide",
+    desc: "Step-by-step walkthrough on how to open an FD — online or at a branch — with tips on what documents you need and what to watch out for.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 9.5l-3 3m0 0l3 3m-3-3h8.25M6.75 12a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M4.886 18.364a9 9 0 010-12.728" />
+      </svg>
+    ),
+    title: "Talks Back to You",
+    desc: "FD Saathi reads its answers aloud in English or your regional language — great for when you'd rather listen than read.",
+  },
+  {
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+      </svg>
+    ),
+    title: "Explain this FD",
+    desc: "Paste any FD offer or bank advertisement and FD Saathi breaks it down — interest rate, payout type, lock-in, penalties — all in plain language.",
+  },
 ];
 
-const FD_TOOLS: { icon: string; label: string; action: "calculator" | "booking" | "chat" | "navigate" | "tds"; q?: string; href?: string }[] = [
-  { icon: "/icons/calculator.svg", label: "FD Calculator", action: "calculator" },
-  { icon: "/icons/compare.svg",    label: "Compare FD's", action: "navigate", href: "/compare-fd" },
-  { icon: "/icons/tax.svg",        label: "Tax Estimator", action: "tds" },
-  { icon: "/icons/writing.svg",    label: "FD Booking Guide", action: "booking" },
-];
-
-function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
-
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
-
-function highlightNumbers(text: string) {
-  const parts = text.split(/(₹[\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?%)/g);
-  return parts.map((part, i) =>
-    /₹|%/.test(part)
-      ? <span key={i} className="font-semibold text-[#00C6FF] bg-[#00C6FF]/10 px-0.5 rounded">{part}</span>
-      : part
-  );
-}
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-const welcomeMsg = (lang: Language): Message => ({
-  id: "welcome",
-  role: "assistant",
-  content:
-    lang === "hindi"
-      ? "नमस्ते! मैं आपका FD सहायक हूं। Fixed Deposit के बारे में कोई भी सवाल पूछें।"
-      : lang === "tamil"
-      ? "வணக்கம்! நான் உங்கள் FD உதவியாளர். Fixed Deposit பற்றி கேளுங்கள்."
-      : lang === "marathi"
-      ? "नमस्कार! मी तुमचा FD सहाय्यक आहे. Fixed Deposit बद्दल काहीही विचारा."
-      : lang === "bengali"
-      ? "নমস্কার! আমি আপনার FD সহায়ক। Fixed Deposit সম্পর্কে যেকোনো প্রশ্ন করুন।"
-      : "Hi! I'm your FD Copilot. Ask me anything about Fixed Deposits — I'll explain in simple language with real numbers.",
-  timestamp: new Date().toISOString(),
-});
-
-const MODELS = [
-  { id: "llama-3.1-8b-instant", label: "Llama 3.1 8B" },
-  { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B" },
-  { id: "mixtral-8x7b-32768", label: "Mixtral 8x7B" },
-];
-
-export default function Home() {
-  const [language, setLanguage] = useState<Language>("english");
-  const [sessions, setSessions] = useState<ChatSession[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [sessionId, setSessionId] = useState<string | undefined>();
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [chatStarted, setChatStarted] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showCalculator, setShowCalculator] = useState(false);
-  const [showBooking, setShowBooking] = useState(false);
-  const [showTDS, setShowTDS] = useState(false);
-  const [showInvest, setShowInvest] = useState(false);
-  const [showExplain, setShowExplain] = useState(false);
-  const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
-  const [showModelDropdown, setShowModelDropdown] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const sendRef = useRef<(text: string) => void>(() => {});
-
-  useEffect(() => { setSessions(getAllSessions()); }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
-  const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || loading) return;
-    if (!chatStarted) setChatStarted(true);
-
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: text, timestamp: new Date().toISOString() };
-    setMessages((prev) => [...(prev.length === 0 ? [welcomeMsg(language)] : prev), userMsg]);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const { data } = await axios.post(`${API_URL}/chat`, { message: text, preferredLanguage: language, sessionId });
-      const botMsg: Message = { id: (Date.now() + 1).toString(), role: "assistant", content: data.response, timestamp: new Date().toISOString() };
-      setMessages((prev) => [...prev, botMsg]);
-      if (data.sessionId && data.sessionId !== sessionId) setSessionId(data.sessionId);
-    } catch {
-      setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: "Sorry, couldn't connect to the server. Make sure the backend is running on port 3001.", timestamp: new Date().toISOString() }]);
-    } finally {
-      setLoading(false);
-    }
-  }, [language, sessionId, loading, chatStarted]);
-
-  useEffect(() => { sendRef.current = sendMessage; }, [sendMessage]);
-
-  useEffect(() => {
-    if (messages.length <= 1) return;
-    // Only persist once we have a real backend session id (not a local draft)
-    if (!sessionId) return;
-    const session = buildLocalSession(messages, sessionId);
-    saveCurrentSession(session);
-    setSessions(getAllSessions());
-  }, [messages, sessionId]);
-
-  function loadSession(s: ChatSession) {
-    setMessages(s.messages);
-    setSessionId(s.id);
-    setChatStarted(true);
-  }
-
-  function newChat() {
-    clearCurrentSession();
-    setMessages([]);
-    setSessionId(undefined);
-    setChatStarted(false);
-    setInput("");
-    setTimeout(() => inputRef.current?.focus(), 50);
-  }
-
-  function handleDelete(e: React.MouseEvent, id: string) {
-    e.stopPropagation();
-    deleteSession(id);
-    setSessions(getAllSessions());
-    if (sessionId === id) newChat();
-  }
-
-  function handleToolClick(tool: typeof FD_TOOLS[number]) {
-    if (tool.action === "calculator") { setShowCalculator(true); return; }
-    if (tool.action === "booking") { setShowBooking(true); return; }
-    if (tool.action === "tds") { setShowTDS(true); return; }
-    if (tool.action === "navigate" && tool.href) { router.push(tool.href); return; }
-    if (tool.q) sendRef.current(tool.q);
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (input.trim()) sendMessage(input.trim());
-  }
-
-  function copyMessage(content: string, id: string) {
-    navigator.clipboard.writeText(content);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  }
-
-  function toggleVoice() {
-    if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
-      alert("Voice input not supported in this browser. Try Chrome.");
-      return;
-    }
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SR();
-    recognition.lang = language === "hindi" ? "hi-IN" : language === "tamil" ? "ta-IN" : language === "marathi" ? "mr-IN" : language === "bengali" ? "bn-IN" : "en-IN";
-    recognition.interimResults = false;
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onresult = (e: any) => setInput(e.results[0][0].transcript);
-    recognition.start();
-  }
-
-  const currentModel = MODELS.find((m) => m.id === selectedModel) || MODELS[0];
+export default function WelcomePage() {
   const router = useRouter();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
 
-  // The whole layout is: fixed sidebar on left, fixed header above sidebar only,
-  // and the right main area fills the rest with its own scroll.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="app-bg" style={{ height: "100vh", display: "flex", overflow: "hidden" }}>
+    <div className="welcome-root">
+      {/* Orbs */}
       <div className="orb orb-1" />
       <div className="orb orb-2" />
+      <div className="welcome-orb-3" />
 
-      {/* ── Left column: header + sidebar, both sticky ── */}
-      <div className="relative z-20 flex-shrink-0 flex flex-col" style={{ width: "320px", height: "100vh", background: "rgba(11,15,42,0.95)", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+      {/* Nav */}
+      <nav
+        className="welcome-nav"
+        style={{
+          background: scrolled ? "rgba(11,15,42,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.07)" : "1px solid transparent",
+        }}
+      >
+        <div className="flex items-center gap-3 pl-6">
+          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+            <img src="/logo.png" alt="FD Saathi" className="w-full h-full object-cover scale-[2]" />
+          </div>
+          <span className="text-white font-extrabold text-xl tracking-tight">FD Saathi</span>
+        </div>
+        <button
+          onClick={() => router.push("/app")}
+          className="welcome-cta-sm pr-8"
+        >
+          Get Started →
+        </button>
+      </nav>
 
-        {/* Sidebar header — only over left column */}
-        <div className="flex items-center gap-3 px-4 py-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-          <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
-            <img src="/logo.png" alt="FD Copilot" className="w-full h-full object-cover scale-[2]" />
-          </div>
-          <div>
-            <p className="text-white font-semibold text-xl leading-tight tracking-tight">FD Saathi</p>
-            <p className="text-[#718096] text-sm leading-tight">AI Fixed Deposit Advisor</p>
-          </div>
+      {/* ── Hero + Preview (single viewport section) ── */}
+      <section ref={heroRef} className="welcome-hero">
+        <div className="welcome-grid-bg" />
+
+        {/* Badge */}
+        <div className="welcome-badge">
+          <span className="welcome-badge-dot" />
+          Powered by Blostem
         </div>
 
-        {/* New Chat */}
-        <div className="px-4 pt-4 pb-3 flex-shrink-0 space-y-2">
-          <button onClick={newChat}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-white text-base font-medium transition-all hover:scale-[1.02]"
-            style={{ background: "linear-gradient(90deg, rgba(0,114,255,0.2), rgba(0,198,255,0.15))", border: "1px solid rgba(0,198,255,0.25)" }}>
-            <svg className="w-4 h-4 text-[#00C6FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Chat
-          </button>
+        {/* 2-line headline */}
+        <h1 className="welcome-h1">
+          Your Personal AI <span className="welcome-gradient-text">FD Advisor</span> —<br />
+          Smarter Savings, Every Language
+        </h1>
 
-          {/* Invest in FD */}
+        <p className="welcome-subtext">
+          Understand, compare, and invest in Fixed Deposits in the language you think in.
+          No jargon, just clarity.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex items-center gap-3 flex-wrap justify-center mb-2">
+          <button onClick={() => router.push("/app")} className="welcome-cta-primary">
+            Get Started →
+          </button>
           <button
-            onClick={() => setShowInvest(true)}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-white text-base font-medium transition-all hover:scale-[1.02] group"
-            style={{ background: "linear-gradient(90deg, rgba(108,99,255,0.2), rgba(0,198,255,0.12))", border: "1px solid rgba(108,99,255,0.3)" }}
+            onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+            className="welcome-cta-ghost"
           >
-            <svg className="w-4 h-4 icon-tint opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-            <div className="text-left">
-              <p className="text-white text-base font-medium leading-tight group-hover:text-[#00C6FF] transition-colors">Invest in FD</p>
-              <p className="text-[#718096] text-xs leading-tight">Booking guide</p>
-            </div>
+            See Features
           </button>
         </div>
 
-        {/* FD Tools */}
-        <div className="px-4 pb-2 flex-shrink-0">
-          <p className="text-[#718096] text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-            <span className="" /> FD Tools
-          </p>
-          {FD_TOOLS.map((t) => (
-            <button key={t.label} onClick={() => handleToolClick(t)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-white/[0.06] transition-all text-base group">
-              <img src={t.icon} alt="" className="w-4 h-4 icon-tint opacity-70 group-hover:opacity-100 transition-opacity" />
-              <span className="group-hover:text-[#00C6FF] transition-colors">{t.label}</span>
-            </button>
+        {/* App screenshot — large, peeking from bottom */}
+        <div className="welcome-peek-wrap">
+          <div className="welcome-peek-frame">
+            {/* browser dots bar */}
+            <div className="welcome-preview-bar">
+              <span className="welcome-dot bg-red-500/80" />
+              <span className="welcome-dot bg-yellow-500/80" />
+              <span className="welcome-dot bg-green-500/80" />
+              <span className="text-[#718096] text-xs ml-3 font-mono">fd-saathi.app</span>
+            </div>
+            <div className="welcome-peek-img-wrap">
+              <div className="welcome-peek-fade" />
+              <img
+                src="/app-screenshot.png"
+                alt="FD Saathi interface"
+                className="welcome-peek-img"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section id="features" className="welcome-features-section">
+        <div className="text-center mb-8">
+          <p className="text-[#00C6FF] text-sm font-semibold uppercase tracking-widest mb-2">What you can do</p>
+          <h2 className="text-white text-5xl font-bold tracking-tight mb-20">Everything you need to<br />make smarter FD decisions</h2>
+        </div>
+
+        <div className="welcome-features-grid">
+          {FEATURES.map((f, i) => (
+            <div key={i} className="welcome-feature-card" style={{ animationDelay: `${i * 0.07}s` }}>
+              <div className="welcome-feature-icon">
+                {f.icon}
+              </div>
+              <h3 className="text-white font-semibold text-xl mb-2">{f.title}</h3>
+              <p className="text-[#718096] text-base leading-relaxed">{f.desc}</p>
+            </div>
           ))}
         </div>
+      </section>
 
-        <div className="mx-4 my-2 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }} />
-
-        {/* Recent Chats — this part scrolls */}
-        <div className="px-4 flex-1 overflow-y-auto chat-scroll pb-4 min-h-0">
-          <p className="text-[#718096] text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-            <span className="" /> Recent Chats
+      {/* ── CTA Banner ── */}
+      <section className="welcome-cta-section">
+        <div className="welcome-cta-glow" />
+        <div className="welcome-cta-sphere" />
+        <div className="welcome-cta-inner">
+          <p className="welcome-cta-eyebrow">Ready to start?</p>
+          <h2 className="welcome-cta-heading">
+            Start growing your<br />
+            <span className="welcome-gradient-text">savings with confidence</span>
+          </h2>
+          <p className="welcome-cta-sub">
+            No sign-up needed. Ask your first question<br />in the language you think in.
           </p>
-          {sessions.length === 0 ? (
-            <p className="text-[#718096] text-base px-1 mt-2">No chats yet</p>
-          ) : (
-            sessions.map((s) => (
-              <div key={s.id}
-                className={`group flex items-center rounded-xl transition-all mb-0.5 ${s.id === sessionId ? "bg-white/[0.08]" : "hover:bg-white/[0.05]"}`}>
-                <button onClick={() => loadSession(s)} className="flex-1 min-w-0 text-left px-3 py-2">
-                  <p className={`text-base truncate transition-colors ${s.id === sessionId ? "text-white" : "text-[#A0AEC0] group-hover:text-white"}`}>
-                    {s.title}
-                  </p>
-                  <p className="text-[#718096] text-sm mt-0.5">{timeAgo(s.updatedAt)}</p>
-                </button>
-                <button onClick={(e) => handleDelete(e, s.id)}
-                  className="opacity-0 group-hover:opacity-100 flex-shrink-0 mr-2 p-1.5 rounded-lg text-[#718096] hover:text-red-400 hover:bg-red-400/10 transition-all"
-                  title="Delete">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Language selector pinned at bottom of sidebar */}
-        <div className="px-4 py-4 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-          <p className="text-[#718096] text-xs font-bold uppercase tracking-widest mb-2">Select language to converse</p>
-          <div className="lang-badge flex items-center gap-2 rounded-xl px-3 py-2">
-            <img src="/icons/globe.svg" alt="" className="w-4 h-4 icon-tint opacity-80 flex-shrink-0" />
-            <select value={language} onChange={(e) => setLanguage(e.target.value as Language)}
-              className="bg-transparent text-white text-base font-medium focus:outline-none cursor-pointer flex-1">
-              <option value="english" className="bg-[#0F1C4D]">English</option>
-              <option value="hindi" className="bg-[#0F1C4D]">हिंदी (hindi)</option>
-              <option value="tamil" className="bg-[#0F1C4D]">தமிழ் (tamil)</option>
-              <option value="marathi" className="bg-[#0F1C4D]">मराठी (marathi)</option>
-              <option value="bengali" className="bg-[#0F1C4D]">বাংলা (bengali)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Right column: main chat area ── */}
-      <div className="relative z-10 flex-1 flex flex-col" style={{ height: "100vh", overflow: "hidden" }}>
-
-        {/* Sticky top bar — no background, model left, tools right */}
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-3 pr-8 pt-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          {/* Left: model pill */}
-          <div className="relative">
+          <div className="flex items-center gap-4 justify-center flex-wrap">
+            <button onClick={() => router.push("/app")} className="welcome-cta-primary welcome-cta-big">
+              Open FD Saathi →
+            </button>
             <button
-              onClick={() => setShowModelDropdown((v) => !v)}
-              className="model-pill flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all"
+              onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+              className="welcome-cta-ghost welcome-cta-big"
             >
-              <span className="w-2 h-2 rounded-full bg-[#00C6FF] inline-block" />
-              {currentModel.label}
-              <svg className="w-3.5 h-3.5 text-[#718096]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {showModelDropdown && (
-              <div className="model-dropdown absolute top-full mt-2 left-0 rounded-xl overflow-hidden z-50 min-w-[180px]">
-                {MODELS.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => { setSelectedModel(m.id); setShowModelDropdown(false); }}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
-                      m.id === selectedModel ? "text-[#00C6FF] bg-white/[0.08]" : "text-[#A0AEC0] hover:text-white hover:bg-white/[0.05]"
-                    }`}
-                  >
-                    {m.id === selectedModel && <span className="w-1.5 h-1.5 rounded-full bg-[#00C6FF] flex-shrink-0" />}
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right: tool pills */}
-          <div className="flex items-center gap-2 mr-2 mt-1">
-            <button onClick={() => setShowCalculator(true)}
-              className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
-              <img src="/icons/calculator.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
-              Calculator
-            </button>
-            <button onClick={() => router.push("/fd-plans")}
-              className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
-              <img src="/icons/explore.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
-              FD Plans
-            </button>
-            <button onClick={() => router.push("/compare-fd")}
-              className="tool-pill flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white hover:text-white transition-all">
-              <img src="/icons/compare.svg" alt="" className="w-4 h-4 icon-tint opacity-80" />
-              Compare FD
+              See Features
             </button>
           </div>
         </div>
-
-        {/* Messages or hero — this scrolls */}
-        {chatStarted ? (
-          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5 chat-scroll min-h-0">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex msg-enter ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                {msg.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mr-3 mt-1">
-                    <img src="/logo.png" alt="bot" className="w-full h-full object-cover scale-[2]" />
-                  </div>
-                )}
-                <div className={`max-w-[75%] group flex flex-col gap-1 ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                  <div className={`rounded-2xl px-4 py-3 text-base leading-relaxed ${msg.role === "user" ? "bubble-user rounded-tr-sm" : "bubble-bot rounded-tl-sm"}`}>
-                    {msg.role === "assistant"
-                      ? <p className="whitespace-pre-wrap">{highlightNumbers(msg.content)}</p>
-                      : <p className="whitespace-pre-wrap">{msg.content}</p>
-                    }
-                  </div>
-                  <div className={`flex items-center gap-2 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                    <span className="text-[#718096] text-xs">{formatTime(msg.timestamp)}</span>
-                    {msg.role === "assistant" && msg.id !== "welcome" && (
-                      <button onClick={() => copyMessage(msg.content, msg.id)}
-                        className="text-[#718096] hover:text-[#00C6FF] transition-colors" title="Copy">
-                        {copiedId === msg.id
-                          ? <svg className="w-3.5 h-3.5 text-[#00C6FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                          : <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                        }
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className="flex justify-start msg-enter">
-                <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 mr-3">
-                  <img src="/logo.png" alt="bot" className="w-full h-full object-cover scale-[2]" />
-                </div>
-                <div className="bubble-bot rounded-2xl rounded-tl-sm px-4 py-3">
-                  <div className="flex gap-1 items-center h-5">
-                    <span className="typing-dot w-2 h-2 rounded-full block" style={{ background: "#00C6FF" }} />
-                    <span className="typing-dot w-2 h-2 rounded-full block" style={{ background: "#00C6FF" }} />
-                    <span className="typing-dot w-2 h-2 rounded-full block" style={{ background: "#00C6FF" }} />
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center px-6 min-h-0">
-            {/* Blue sphere */}
-            <div className="blue-sphere mb-6" />
-            <h1 className="text-white text-5xl sm:text-5xl font-bold leading-tight tracking-tight text-center mb-2">
-              {getGreeting()}, how can I help<br />you grow your{" "}
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(90deg,#0072FF,#00C6FF)" }}>
-                savings today?
-              </span>
-            </h1>
-            <p className="text-[#718096] text-base mt-3">Ask in English, हिंदी, தமிழ், मराठी, or বাংলা — I understand all five.</p>
-          </div>
-        )}
-
-        {/* Input + chips — always pinned at bottom of right column */}
-        <div className="flex-shrink-0 px-6 pb-3 pt-2 flex flex-col items-center gap-2">
-
-          <form onSubmit={handleSubmit} className="w-full max-w-4xl">
-            <div className="glass-card input-glow rounded-full px-5 py-2.5 flex items-center gap-3 transition-all">
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(e as any); } }}
-                placeholder={
-                  language === "hindi" ? "FD के बारे में पूछें..."
-                  : language === "tamil" ? "FD பற்றி கேளுங்கள்..."
-                  : language === "marathi" ? "FD बद्दल विचारा..."
-                  : language === "bengali" ? "FD সম্পর্কে জিজ্ঞেস করুন..."
-                  : "What FD help do you need today?"
-                }
-                className="flex-1 bg-transparent text-white placeholder-[#718096] text-base focus:outline-none"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={toggleVoice}
-                className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full transition-all ${
-                  isListening ? "bg-red-500/20 text-red-400 animate-pulse" : "text-[#718096] hover:text-[#00C6FF] hover:bg-white/[0.06]"
-                }`}
-                title="Voice input"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </button>
-              <button type="submit" disabled={!input.trim() || loading}
-                className="btn-accent flex-shrink-0 w-9 h-9 flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </button>
-            </div>
-          </form>
-
-          {!chatStarted && (
-            <div className="flex flex-wrap justify-center gap-2 max-w-4xl mt-3">
-              {/* Explain FD chip — highlighted entry point */}
-              <button
-                onClick={() => setShowExplain(true)}
-                className="flex items-center gap-1.5 text-sm px-4 py-2 rounded-full transition-all font-semibold"
-                style={{
-                  background: "linear-gradient(90deg, rgba(0,114,255,0.18), rgba(0,198,255,0.12))",
-                  border: "1px solid rgba(0,198,255,0.35)",
-                  color: "#00C6FF",
-                }}
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                {language === "hindi" ? "यह FD समझाएं" : language === "tamil" ? "FD விளக்கு" : language === "marathi" ? "हे FD समजावा" : language === "bengali" ? "এই FD বুঝিয়ে দাও" : "Explain this FD"}
-              </button>
-              {QUICK_START.map((chip) => (
-                <button key={chip.label} onClick={() => sendRef.current(chip.label)}
-                  className="chip-glow text-[#A0AEC0] hover:text-white text-sm px-4 py-2 rounded-full transition-all"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <p className="text-[#718096] text-[10px] leading-none mt-1">FD Saathi · Not financial advice · Always verify with your bank</p>
+        <div className="welcome-cta-footer-line">
+          <span className="welcome-cta-divider" />
+          <p className="welcome-cta-footnote">Powered by Blostem · Built for Bharat</p>
+          <span className="welcome-cta-divider" />
         </div>
-      </div>
-
-      {showCalculator && <CalculatorModal language={language} onClose={() => setShowCalculator(false)} />}
-      {showBooking && <BookingModal language={language} onClose={() => setShowBooking(false)} />}
-      {showTDS && <TDSCalculatorModal language={language} onClose={() => setShowTDS(false)} />}
-      {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
-      {showExplain && (
-        <ExplainFDModal
-          language={language}
-          onClose={() => setShowExplain(false)}
-          onExplain={(text) => { setShowExplain(false); sendRef.current(text); }}
-        />
-      )}
+      </section>
     </div>
   );
 }

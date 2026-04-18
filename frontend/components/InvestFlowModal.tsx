@@ -57,6 +57,8 @@ export default function InvestFlowModal({ onClose }: { onClose: () => void }) {
   const [simName, setSimName] = useState("");
   const [simPan, setSimPan] = useState("");
   const [simSubmitted, setSimSubmitted] = useState(false);
+  const [bookingRef, setBookingRef] = useState<string | null>(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   function computeRankings(amt: number, dur: string, g: Goal): RankedPlan[] {
     const years = tenureToYears(dur);
@@ -119,11 +121,32 @@ export default function InvestFlowModal({ onClose }: { onClose: () => void }) {
     setStep("booking");
   }
 
-  function handleSimSubmit(e: React.FormEvent) {
+  async function handleSimSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!simName.trim() || !simPan.trim()) return;
-    setSimSubmitted(true);
-    setStep("success");
+    if (!simName.trim() || !simPan.trim() || !selectedPlan) return;
+    setBookingLoading(true);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const res = await fetch(`${API_URL}/book-fd`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          principal: amount,
+          rate: selectedPlan.maxRate,
+          tenure: tenureToYears(duration!),
+          bankName: selectedPlan.bank,
+          holderName: simName,
+        }),
+      });
+      const data = await res.json();
+      setBookingRef(data.bookingReference ?? "FD" + Date.now().toString().slice(-8));
+    } catch {
+      setBookingRef("FD" + Date.now().toString().slice(-8));
+    } finally {
+      setBookingLoading(false);
+      setSimSubmitted(true);
+      setStep("success");
+    }
   }
 
   const topPlan = rankedPlans[0];
@@ -428,10 +451,10 @@ export default function InvestFlowModal({ onClose }: { onClose: () => void }) {
                   </div>
                   <button
                     type="submit"
-                    disabled={!simName.trim() || !simPan.trim()}
+                    disabled={!simName.trim() || !simPan.trim() || bookingLoading}
                     className="btn-accent w-full py-2.5 font-semibold text-sm"
                   >
-                    Confirm FD (Simulation)
+                    {bookingLoading ? "Booking..." : "Confirm FD (Simulation)"}
                   </button>
                 </form>
               </div>
@@ -461,6 +484,12 @@ export default function InvestFlowModal({ onClose }: { onClose: () => void }) {
                 className="w-full rounded-xl p-4 space-y-2 text-left"
                 style={{ background: "rgba(16,185,129,0.07)", border: "1px solid rgba(16,185,129,0.25)" }}
               >
+                {bookingRef && (
+                  <div className="flex justify-between text-sm pb-2 mb-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                    <span className="text-[#A0AEC0]">Booking Reference</span>
+                    <span className="text-emerald-400 font-bold tracking-widest">{bookingRef}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-[#A0AEC0]">Bank</span>
                   <span className="text-white font-semibold">{selectedPlan.bank}</span>

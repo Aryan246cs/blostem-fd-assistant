@@ -62,7 +62,7 @@ async function translateChunk(text, srcCode, tgtCode) {
   if (translated && !translated.includes("QUERY LENGTH LIMIT") && translated !== "PLEASE SELECT TWO DISTINCT LANGUAGES") {
     return translated;
   }
-  return text;
+  return null; // signal failure to caller
 }
 
 /**
@@ -96,6 +96,10 @@ async function translateText(text, sourceLang, targetLang) {
 
     // Translate each chunk
     const translated = await Promise.all(chunks.map((c) => translateChunk(c, srcCode, tgtCode)));
+    // If any chunk failed (null), fall back to English with a note
+    if (translated.some((t) => t === null)) {
+      return text + "\n\n(Translation unavailable — showing English response)";
+    }
     return translated.join(" ");
   } catch (err) {
     console.warn("Translation failed, using original text:", err.message);
