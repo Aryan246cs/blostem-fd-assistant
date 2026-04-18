@@ -233,41 +233,45 @@ export default function BookingModal({ language, onClose }: { language?: Languag
 
               {/* Steps */}
               <div className="relative">
-                {/* vertical line */}
-                <div
-                  className="absolute left-[22px] top-6 bottom-6 w-px"
-                  style={{ background: "linear-gradient(180deg, rgba(0,198,255,0.4) 0%, rgba(0,114,255,0.1) 100%)" }}
-                />
-                <div className="space-y-3">
+                <div className="space-y-0">
                   {APP_STEPS.map((s, i) => (
-                    <div
-                      key={i}
-                      className="flex gap-3 rounded-xl p-3.5 transition-all"
-                      style={{
-                        background: s.highlight ? "rgba(0,198,255,0.07)" : "rgba(255,255,255,0.03)",
-                        border: s.highlight ? "1px solid rgba(0,198,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                      }}
-                    >
-                      {/* Step number bubble */}
+                    <>
                       <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 text-white"
-                        style={{ background: s.highlight ? "linear-gradient(135deg,#0072FF,#00C6FF)" : "rgba(0,198,255,0.12)", border: "1px solid rgba(0,198,255,0.25)" }}
+                        key={i}
+                        className="flex gap-3 rounded-xl p-3.5 transition-all"
+                        style={{
+                          background: s.highlight ? "rgba(0,198,255,0.07)" : "rgba(255,255,255,0.03)",
+                          border: s.highlight ? "1px solid rgba(0,198,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                        }}
                       >
-                        <span style={{ color: s.highlight ? "#fff" : "#00C6FF" }}>{s.icon}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                            style={{ background: "rgba(0,198,255,0.12)", color: "#00C6FF" }}
-                          >
-                            {s.tag}
-                          </span>
+                        {/* Step number bubble */}
+                        <div
+                          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 text-white"
+                          style={{ background: s.highlight ? "linear-gradient(135deg,#0072FF,#00C6FF)" : "rgba(0,198,255,0.12)", border: "1px solid rgba(0,198,255,0.25)" }}
+                        >
+                          <span style={{ color: s.highlight ? "#fff" : "#00C6FF" }}>{s.icon}</span>
                         </div>
-                        <p className="text-white text-sm font-semibold leading-snug">{s.title}</p>
-                        <p className="text-[#A0AEC0] text-xs mt-1 leading-relaxed">{s.desc}</p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ background: "rgba(0,198,255,0.12)", color: "#00C6FF" }}
+                            >
+                              {s.tag}
+                            </span>
+                          </div>
+                          <p className="text-white text-sm font-semibold leading-snug">{s.title}</p>
+                          <p className="text-[#A0AEC0] text-xs mt-1 leading-relaxed">{s.desc}</p>
+                        </div>
                       </div>
-                    </div>
+                      {i < APP_STEPS.length - 1 && (
+                        <div className="flex" style={{ height: "12px" }}>
+                          <div style={{ width: "36px", flexShrink: 0 }} className="flex justify-center">
+                            <div className="w-0.5 h-full" style={{ background: "linear-gradient(180deg, rgba(0,198,255,0.55) 0%, rgba(0,114,255,0.3) 100%)" }} />
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ))}
                 </div>
               </div>
@@ -294,43 +298,46 @@ export default function BookingModal({ language, onClose }: { language?: Languag
               </div>
 
               <div className="relative">
-                <div
-                  className="absolute left-[22px] top-6 bottom-6 w-px"
-                  style={{ background: "linear-gradient(180deg, rgba(0,198,255,0.4) 0%, rgba(0,114,255,0.1) 100%)" }}
-                />
-                <div className="space-y-3">
+                <div className="space-y-0">
                   {BANK_STEPS.map((s, i) => (
-                    <div
-                      key={i}
-                      className="rounded-xl overflow-hidden transition-all"
-                      style={{
-                        background: s.highlight ? "rgba(0,198,255,0.07)" : "rgba(255,255,255,0.03)",
-                        border: s.highlight ? "1px solid rgba(0,198,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                      }}
-                    >
-                      <div className="flex gap-3 p-3.5">
-                        <div
-                          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ background: s.highlight ? "linear-gradient(135deg,#0072FF,#00C6FF)" : "rgba(0,198,255,0.12)", border: "1px solid rgba(0,198,255,0.25)" }}
-                        >
-                          <span style={{ color: s.highlight ? "#fff" : "#00C6FF" }}>{s.icon}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span
-                              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{ background: "rgba(0,198,255,0.12)", color: "#00C6FF" }}
-                            >
-                              {s.tag}
-                            </span>
+                    <>
+                      <div
+                        key={i}
+                        className="rounded-xl overflow-hidden transition-all"
+                        style={{
+                          background: s.highlight ? "rgba(0,198,255,0.07)" : "rgba(255,255,255,0.03)",
+                          border: s.highlight ? "1px solid rgba(0,198,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                        }}
+                      >
+                        <div className="flex gap-3 p-3.5">
+                          <div
+                            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ background: s.highlight ? "linear-gradient(135deg,#0072FF,#00C6FF)" : "rgba(0,198,255,0.12)", border: "1px solid rgba(0,198,255,0.25)" }}
+                          >
+                            <span style={{ color: s.highlight ? "#fff" : "#00C6FF" }}>{s.icon}</span>
                           </div>
-                          <p className="text-white text-sm font-semibold leading-snug">{s.title}</p>
-                          <p className="text-[#A0AEC0] text-xs mt-1 leading-relaxed">{s.desc}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span
+                                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                style={{ background: "rgba(0,198,255,0.12)", color: "#00C6FF" }}
+                              >
+                                {s.tag}
+                              </span>
+                            </div>
+                            <p className="text-white text-sm font-semibold leading-snug">{s.title}</p>
+                            <p className="text-[#A0AEC0] text-xs mt-1 leading-relaxed">{s.desc}</p>
+                          </div>
                         </div>
                       </div>
-
-                      
-                    </div>
+                      {i < BANK_STEPS.length - 1 && (
+                        <div className="flex" style={{ height: "12px" }}>
+                          <div style={{ width: "36px", flexShrink: 0 }} className="flex justify-center">
+                            <div className="w-0.5 h-full" style={{ background: "linear-gradient(180deg, rgba(0,198,255,0.55) 0%, rgba(0,114,255,0.3) 100%)" }} />
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ))}
                 </div>
               </div>
