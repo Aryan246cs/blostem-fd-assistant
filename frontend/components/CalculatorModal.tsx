@@ -137,6 +137,25 @@ export default function CalculatorModal({ language, onClose }: { language: Langu
         </div>
 
         <div className="p-5 space-y-4">
+
+          {/* Formula info box */}
+          <div className="rounded-xl p-3.5" style={{ background: "rgba(0,198,255,0.05)", border: "1px solid rgba(0,198,255,0.15)" }}>
+            <p className="text-[#00C6FF] text-xs font-bold mb-1.5 uppercase tracking-wide">How FD returns are calculated</p>
+            <p className="text-[#A0AEC0] text-xs leading-relaxed mb-2">
+              A Fixed Deposit earns <span className="text-white font-medium">compound interest</span>, meaning interest is added back to your principal each quarter — so you earn interest on interest.
+            </p>
+            <div className="rounded-lg px-3 py-2 text-center" style={{ background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <p className="text-white text-xs font-mono tracking-wide">A = P × (1 + r/n) <sup>n×t</sup></p>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-0.5">
+              {[["P", "Principal amount"], ["r", "Annual interest rate"], ["n", "Compounding periods/year (4)"], ["t", "Tenure in years"]].map(([sym, def]) => (
+                <p key={sym} className="text-[#718096] text-[11px]">
+                  <span className="text-[#00C6FF] font-mono font-bold">{sym}</span> = {def}
+                </p>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-[#A0AEC0] mb-1.5">{L.principal}</label>
             <input type="number" value={principal} onChange={(e) => setPrincipal(e.target.value)}

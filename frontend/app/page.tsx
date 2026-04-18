@@ -26,7 +26,7 @@ const FD_TOOLS: { icon: string; label: string; action: "calculator" | "booking" 
   { icon: "/icons/calculator.svg", label: "FD Calculator", action: "calculator" },
   { icon: "/icons/compare.svg",    label: "Compare FD's", action: "navigate", href: "/compare-fd" },
   { icon: "/icons/tax.svg",        label: "Tax Estimator", action: "tds" },
-  { icon: "/icons/writing.svg",    label: "Book an FD", action: "booking" },
+  { icon: "/icons/writing.svg",    label: "FD Booking Guide", action: "booking" },
 ];
 
 function timeAgo(iso: string) {
