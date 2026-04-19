@@ -3,14 +3,7 @@
  * Falls back to returning original text if translation fails
  */
 
-// Resolve axios from backend's node_modules (utils is shared, not a standalone package)
-let axios;
-try {
-  axios = require("axios");
-} catch {
-  // Try resolving from parent backend folder
-  axios = require(require("path").join(__dirname, "../backend/node_modules/axios"));
-}
+const axios = require("axios");
 
 // Language code mapping
 const LANGUAGE_CODES = {
