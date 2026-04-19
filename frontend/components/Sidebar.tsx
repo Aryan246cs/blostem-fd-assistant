@@ -42,7 +42,8 @@ export default function Sidebar({
   }
 
   return (
-    <aside
+    <>
+      <aside
       className={`fixed top-0 left-0 h-full w-64 z-30 flex flex-col transition-transform duration-300 ${
         open ? "translate-x-0" : "-translate-x-full"
       } lg:relative lg:translate-x-0 lg:z-auto ${open ? "lg:flex" : "lg:hidden"}`}
@@ -138,5 +139,6 @@ export default function Sidebar({
       </div>
     </aside>
     {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
-  );
+  </>;
 }
+
