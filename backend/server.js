@@ -16,7 +16,13 @@ const { loadKnowledgeBase, retrieveContext }                       = require("..
 const { generateEngineResponse, loadData: loadEngineData, detectLanguage: engineDetectLang } = require("../utils/responseEngine");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean),
+  credentials: true,
+}));
 app.use(express.json());
 
 loadKnowledgeBase();
