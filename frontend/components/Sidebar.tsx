@@ -137,8 +137,9 @@ export default function Sidebar({
           ))
         )}
       </div>
-    </aside>
-    {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
-  </>;
+      </aside>
+      {showInvest && <InvestFlowModal onClose={() => setShowInvest(false)} />}
+    </>
+  );
 }
 
