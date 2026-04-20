@@ -265,7 +265,7 @@ export default function Home() {
       <div className="orb orb-2" />
 
       {/* ── Left column: header + sidebar, both sticky ── */}
-      <div className="relative z-20 flex-shrink-0 flex flex-col" style={{ width: "320px", height: "100vh", background: "rgba(11,15,42,0.95)", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+      <div className="relative z-20 flex-shrink-0 flex flex-col" style={{ width: "260px", height: "100vh", background: "rgba(11,15,42,0.95)", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
 
         {/* Sidebar header — only over left column */}
         <div className="flex items-center gap-3 px-4 py-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
